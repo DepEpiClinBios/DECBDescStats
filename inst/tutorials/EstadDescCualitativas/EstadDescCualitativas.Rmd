@@ -1,0 +1,1556 @@
+---
+title: "Estadística descriptiva para variables cualitativas"
+output:
+  learnr::tutorial:
+    start_over_button: true
+    progressive: true
+    allow_skip: true
+    df_print: default
+runtime: shiny_prerendered
+description: >
+  Este modulo contiene los conceptos básico para estimar estadística descriptiva y gráficos estadísticos para variables cualitativas en R.
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+<style>
+blockquote {
+  font-size: 1em; /* igual al cuerpo normal */
+}
+</style>
+
+```{r setup, include=FALSE}
+# Attach packages:
+
+library(learnr)
+library(fontawesome)
+library(ggplot2)
+#gradethis::gradethis_setup()
+#tutorial_options(exercise.timelimit = 60)
+
+# Global code chunk settings:
+knitr::opts_chunk$set(echo = FALSE)
+
+# data
+
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+---
+
+```{r banner, echo=FALSE, results='asis'}
+htmltools::HTML("
+  <div style='
+    text-align: center;
+    margin-bottom: 20px;
+  '>
+    <img src='images/banner_central.png' style='
+      max-width: 100%;
+      height: auto;
+    '>
+  </div>
+")
+```
+
+```{r, echo=FALSE, results='asis'}
+htmltools::tags$style(HTML("
+  h1 {
+    color: #1e90ff; /* Azul para títulos principales */
+  }
+
+  h2 {
+    color: #007bff; /* Azul brillante para subtítulos */
+  }
+
+  h3 {
+    color: #0056b3; /* Azul más oscuro para subtítulos más pequeños */
+  }
+"))
+```
+
+---
+
+
+## 1. Introducción
+
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("images/banner1b.png")  
+```
+
+<div class="alert alert-info" role="alert">
+Este tutorial interactivo le permitirá aplicar los conceptos fundamentales de la <strong> estadística descriptiva para variables cualitativas </strong> mediante la ejecución de código en R. A través de ejemplos guiados y ejercicios prácticos, usted desarrollará habilidades para calcular e interpretar medidas de resumen tales como frecuencias absolutas, relativas y porcentajes, así como para visualizar esta información de manera efectiva. Estas herramientas son esenciales para describir y comprender el comportamiento de este tipo de variables en investigaciones clínicas y epidemiológicas.
+</div>
+
+::: {style="margin-top: 1cm;"}
+:::
+
+### ¿Qué aprenderá en esta actividad?
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+En este taller, usted pondrá en práctica los siguientes conceptos básicos para el análisis de variables cualitativas:
+
+ - Elaboración de tablas de frecuencias absolutas, relativas, porcentuales y acumuladas.
+
+ - Construcción de tablas de contingencia para analizar la asociación entre dos variables cualitativas.
+
+ - Cálculo de la moda en variables cualitativas.
+
+ - Creación de gráficos estadísticos adecuados para variables cualitativas, como gráficos de barras y gráficos de sectores (pastel).
+
+::: {style="margin-top: 1cm;"}
+:::
+
+<h3>Créditos</h3>
+
+<p><strong>Autor:</strong> Martín A. Rondón S.</p>
+<p><strong>Afiliación:</strong> Profesor Asociado. Departamento de Epidemiología Clínica y Bioestadística, Facultad de Medicina. Pontificia Universidad Javeriana</p>
+<p><strong>Contacto:</strong> <a href="mailto:martin.rondon@javeriana.edu.co">martin.rondon@javeriana.edu.co</a></p>
+
+<p>Este tutorial ha sido desarrollado como parte del curso de <em>Introducción a la Bioestadística en la Maestría en Epidemiología Clínica</em>.</p>
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" alt="Licencia de Creative Commons" style="border-width:0"/></a><br />
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Esta obra está bajo una <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">licencia de Creative Commons Reconocimiento-No Comercial-Compartir Igual 4.0 Internacional</a>.
+
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## 1 Descripción del taller
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+En el análisis de datos, comprender cómo se distribuyen y varían los
+valores de variables cualitativas es fundamental para tomar decisiones
+informadas y sólidas. En este taller interactivo, exploraremos los
+conceptos básicos de la estadística descriptiva aplicados a variables
+cualitativas, utilizando el entorno de programación **R**.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Nos enfocaremos en dos grandes ejes del análisis descriptivo:
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+-   **Medidas numéricas para datos cualitativos**, que nos permiten
+    sintetizar la información sobre la distribución de las categorías.
+    Estas incluyen:
+    
+    
+    -   Medidas de frecuencia, tales como:
+
+        -   Frecuencias absolutas 
+        -   Frecuencias relativas 
+        -   Porcentajes 
+        -   Frecuencias acumuladas de las tres anteriores
+        -   La moda
+    
+    -   Tablas de frecuencia 
+
+    -   Tablas de asociación 
+   
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+-   **Visualización gráfica de variables cualitativas**, una herramienta
+    poderosa para explorar y entender la distribución de las variables según sus
+    categorías. Trabajaremos con:
+
+    -   Gráficos de barras simples y agrupados.
+
+    -   Gráficos de sectores (pasteles)
+
+
+::: {style="margin-top: 1cm;"}
+:::
+
+#### **A lo largo del taller, usted podrá:**
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+-   Calcular e interpretar estas diferentes medidas manualmente o utilizando R.
+-   Relacionar los valores numéricos de las frecuencias con sus representaciones gráficas.
+-   Aplicar los conceptos a conjuntos de datos reales mediante ejercicios interactivos.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Este taller tiene como objetivo introducir el análisis de datos
+empleando el programa estadístico [R](https://cran.r-project.org/).
+
+::: {style="margin-top: 1cm;"}
+:::
+
+#### **¿Cómo desarrollar este tutorial?**
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+A lo largo del tutorial, encontrará ejemplos de código, ejercicios de
+programación y preguntas de análisis. Los ejemplos de código y los
+ejercicios pretenden introducir habilidades básicas de R. No es
+necesario tener conocimientos previos sobre R para el desarrollo de este
+tutorial.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+#### `r fa("lightbulb", fill = "orange",  height="1em", width="1em")` = Ejemplo de código
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Este ícono identifica ejemplos de código listos para usar. Es posible
+explorar, ejecutar y modificar este código para comprender el
+funcionamiento de cada función o comando. Para ejecutar el código, solo
+es necesario presionar el botón **Run code** en la esquina superior
+derecha.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r, echo=FALSE, out.width="50%", fig.align = "center"}
+knitr::include_graphics("images/ejemplo.png")  
+```
+
+
+> **No es necesario preocuparse por “dañar” el código:** si se realizan
+> modificaciones que generan errores, el ejemplo original puede
+> restaurarse en cualquier momento mediante el botón **Start Over** en
+> la esquina superior izquierda.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+#### `r fa("pencil-alt", fill = "green", height="1em", width="1em")` = Ejercicio de código
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Los ejercicios están diseñados para aplicar lo aprendido, escribiendo el
+código necesario para resolver las preguntas o problemas planteados.
+
+
+> **Si siente que se ha quedado sin ideas o no sabe cómo continuar con
+> el ejercicio:** puede consultar el botón **Solution** (solución) para recibir orientación sin perder la oportunidad de
+> aprender activamente.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r, echo=FALSE, out.width="50%", fig.align = "center"}
+knitr::include_graphics("images/ejercicio2.png")  
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+#### `r fa("comments", fill = "#2c5697", height="1em", width="1em")` = Preguntas de análisis
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Estas preguntas invitan a reflexionar sobre los resultados y conceptos.
+Algunas no poseen una única respuesta correcta, sino que buscan fomentar
+el pensamiento crítico.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Con frecuencia, estas preguntas están vinculadas con un ejemplo o
+ejercicio de código. En esos casos, asegúrese de ejecutar el código
+correspondiente para poder ver la salida necesaria que le ayudará a
+responder las preguntas.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## 2. Medidas de Resumen
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Las medidas de medidas de resumen en variables cualitativas corresponden
+a valores numéricos que buscan representar en un único número un
+conjunto de datos. Estas medidas son fundamentales para resumir y
+comprender la información contenida en los datos donde las categorías
+pueden ser nominales u ordinales. Las más comunes son:
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+-   **Frecuencias absolutas**: el número de veces que aparece cada
+    categoría en el conjunto de datos.
+-   **Frecuencias relativas o proporciones**: la proporción de veces que
+    aparece cada categoría en relación al total de observaciones.
+-   **Porcentajes**: la frecuencia relativa expresada en porcentaje, que
+    facilita la interpretación de la proporción de cada categoría
+    respecto al total.
+-   **Frecuencias acumuladas**: la suma de las frecuencias absolutas,
+    relativas o porcentajes hasta una categoría específica, que muestra
+    cómo se acumulan las observaciones, las proporciones o los
+    porcentajes a medida que avanzamos por las categorías.
+-   **Moda**: la categoría que aparece con mayor frecuencia en el
+    conjunto de datos.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## 2.1 Frecuencias Absolutas
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Las frecuencias absolutas corresponden a el número de veces que aparece
+cada categoría en un conjunto de datos y nos permiten entender la
+distribución de las categorías de manera descriptiva. Veamos el
+siguiente ejemplo para ilustrar cómo calcular las frecuencias absolutas.
+
+::: {style="margin-top: 1cm;"}
+:::
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 1
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+El siguiente conjunto de datos representa el estado civil de 20
+pacientes en una clínica:
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+["Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo",
+"Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero",
+"Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado",
+"Soltero", "Casado"]{style="color:blue; font-weight:bold;"}
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Para calcular las frecuencias absolutas del estado civil de los
+pacientes, simplemente contamos cuantas veces se repite cada categoría.
+
+En este caso en particular, vemos que las categorías son "Soltero",
+"Casado", "Divorciado" y "Viudo". Al contar encontramos que Soltero
+aparece 8 veces, Casado 7 veces, Divorciado 3 veces y Viudo 2 veces.
+Estas corresponden a las frecuencias absolutas y significa que la
+categoría "Soltero" es la más frecuente.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+En casos en los cuales el tamaño de la muestra empieza a aumentar, ya se
+hace más dispendioso contar manualmente las frecuencias absolutas. Por
+lo tanto, es recomendable utilizar herramientas de programación para
+realizar este cálculo de manera eficiente. Para calcular las frecuencias
+absolutas en R, podemos usar la función `table()`, que crea una tabla de
+frecuencias absolutas a partir de un vector de datos.
+
+::: {style="margin-top: 1cm;"}
+:::
+
+Ejecute el siguiente código 
+
+```{r fa2, exercise = TRUE}
+
+# Primero, cree un vector con los datos
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# Luego, calcule las frecuencias absolutas
+tabla1 <- table(estado_civil)
+
+# Imprima la tabla de frecuencias absolutas
+print(tabla1)
+```
+
+::: {style="margin-top: 1cm;"}
+:::
+
+## **Interpretación de las frecuencias absolutas**
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r fa2b, echo=FALSE}
+
+# Primero, cree un vector con los datos
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# Luego, calcule las frecuencias absolutas
+tabla1 <- table(estado_civil)
+
+# Imprima la tabla de frecuencias absolutas
+print(tabla1)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Las frecuencias absolutas nos indican que la categoría "Soltero" tiene la mayor frecuencia absoluta con 8 pacientes, seguida por "Casado" con 7 pacientes, "Divorciado" con 3 pacientes y "Viudo" con 2 pacientes.
+
+
+
+## 2.2 Frecuencias Relativas
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Las frecuencias relativas permiten comprender cómo se distribuyen las categorías dentro de un conjunto de datos. Son especialmente útiles para comparar proporciones entre diferentes grupos o muestras de distintos tamaños, ya que estandarizan la información en relación con el total.
+
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 2
+
+Calcule las frecuencias relativas del estado civil de los pacientes. Para el caso de los solteros, la proporción se calcula como el número de solteros dividido por el total de pacientes. En este caso, la proporción es de 8/20 = 0.40
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+En R, podemos calcular las frecuencias relativas utilizando la función `prop.table()`, que convierte las frecuencias absolutas en proporciones. Esta función toma como entrada una tabla de frecuencias absolutas y devuelve una tabla de frecuencias relativas.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Ejecute el siguiente codigo
+
+```{r fa3, exercise = TRUE}
+# Primero, cree un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# Luego, construya una tabla de frecuencias absolutas
+frec_absolutas <- table(estado_civil)
+
+# Calcule las frecuencias relativas (proporciones)
+frec_relativas <- prop.table(frec_absolutas)
+
+# Imprima las frecuencias relativas
+print(frec_relativas)
+```
+
+## Interpretación de las frecuencias relativas
+
+```{r fa3b, echo=FALSE}
+# Primero, cree un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# Luego, construya una tabla de frecuencias absolutas
+frec_absolutas <- table(estado_civil)
+
+# Calcule las frecuencias relativas (proporciones)
+frec_relativas <- prop.table(frec_absolutas)
+
+# Imprima las frecuencias relativas
+print(frec_relativas)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Al revisar las frecuencias relativas encontramos que 0.40 de las personas eran "Solteros", seguida con una proporción de 0.35 de "Casados".
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+---
+⚠️ **Importante:** Para comparar distribuciones entre grupos con diferentes tamaños de muestra, se deben utilizar las frecuencias relativas.
+---
+
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+
+
+## `r fa("pencil-alt", fill = "green")` Ejercicio 1
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Se registraron los diagnósticos de hospitalización 🏥 25 pacientes:
+
+["Neumonía", "Gripe", "Apendicitis", "Neumonía", "Gripe",
+"Gastroenteritis", "Neumonía", "Gripe", "Neumonía", "Apendicitis",
+"Gripe", "Neumonía", "Gastroenteritis", "Gripe", "Neumonía", "Neumonía",
+"Gripe", "Apendicitis", "Neumonía",
+"Gripe"]{style="color:orange; font-weight:bold;"}
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Calcule las frecuencias absolutas y relativas de los diagnósticos de
+hospitalización.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+✍️ Es su turno! Emplee el siguiente chunk (bloque) para escribir el
+código de R. Tenga presente que tiene la opción de ver la solución
+(¡pero asegúrese de intentar resolverla manualmente primero!)
+
+::: {style="margin-top: 1cm;"}
+:::
+
+```{r mean_ej1, exercise = TRUE}
+# Primero, cree un vector con los datos de los diagnósticos de hospitalización (llamelo diag)
+
+
+# Luego, calcule las frecuencias absolutas
+
+
+# Imprima la tabla de frecuencias absolutas
+
+
+# Calcule las frecuencias relativas (proporciones)
+
+
+# Imprima las frecuencias relativas
+
+
+```
+
+```{r mean_ej1-solution}
+# Primero, cree un vector con los datos de los diagnósticos de hospitalización
+diag <- c("Neumonía", "Gripe", "Apendicitis", "Neumonía", "Gripe", "Gastroenteritis", "Neumonía", "Gripe", "Neumonía", 
+                  "Apendicitis", "Gripe", "Neumonía", "Gastroenteritis", "Gripe", "Neumonía", "Neumonía", "Gripe", "Apendicitis", 
+                  "Neumonía", "Gripe")
+
+# Luego, calcule las frecuencias absolutas
+frec_absolutas <- table(diag)
+
+# Imprima la tabla de frecuencias absolutas
+print(frec_absolutas)
+
+# Calcule las frecuencias relativas (proporciones)
+frec_relativas <- prop.table(frec_absolutas)
+
+# Imprima las frecuencias relativas
+print(frec_relativas)
+```
+
+::: {style="margin-top: 1cm;"}
+:::
+
+#### `r fa("comments", fill = "#2c5697", height="1em", width="1em")` Según los resultados obtenidos responda:
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r question-frec1, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(learnr)
+library(dplyr)
+
+question(
+  "Los diagnósticos de hospitalización más frecuentes fueron:",
+    answer("Apendicitis y Gastroenteritis"),
+    answer("Neumonía y  Gripe", correct = TRUE),
+    answer("Apendicitis y Gripe"),
+    answer("Neumonía y Gastroenteritis"),  
+  allow_retry = TRUE
+)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r question-frec2, echo=FALSE, warning=FALSE, message=FALSE}
+question(
+  "Cual de las siguientes afirmaciones es falsa:",
+    answer("El 0.15 de los pacientes fueron diagnosticados con Apendicitis"),
+    answer("El 0.20 de los pacientes fueron diagnosticados con Gripe", correct = TRUE),
+    answer("El 0.40 de los pacientes fueron diagnosticados con Neumonía"),
+    answer("El 0.10 de los pacientes fueron diagnosticados con Gastroenteritis"),
+  allow_retry = TRUE
+)
+```
+
+
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+
+## 2.3 Porcentajes
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Los porcentajes son una forma de expresar las frecuencias relativas en
+términos porcentuales, lo que facilita la interpretación de la
+proporción de cada categoría respecto al total. Los porcentajes se
+calculan multiplicando las frecuencias relativas por 100.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 3
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Calcule los porcentajes del estado civil de los pacientes. En el caso de los solteros, el porcentaje se calcula como la frecuencia relativa de solteros multiplicada por 100. En este caso, el porcentaje de solteros es 0.40 * 100 = 40%.
+
+En R usamos nuevamente la función `prop.table()` y la multiplicamos por 100 para obtener los porcentajes.
+
+Ejecute el siguiente código
+
+```{r percentage_ex1, exercise = TRUE}
+# Primero, cree un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", 
+                   "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", 
+                   "Divorciado", "Soltero", "Casado")
+# Luego, calcule las frecuencias absolutas
+frec_absolutas <- table(estado_civil)
+# Calcule los porcentajes
+porcentajes <- prop.table(frec_absolutas) * 100
+# Imprima los porcentajes
+print(porcentajes)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## Interpretación de los porcentajes
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r percentage_ex1b, echo=FALSE}
+# Primero, cree un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", 
+                   "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", 
+                   "Divorciado", "Soltero", "Casado")
+# Luego, calcule las frecuencias absolutas
+frec_absolutas <- table(estado_civil)
+# Calcule los porcentajes
+porcentajes <- prop.table(frec_absolutas) * 100
+# Imprima los porcentajes
+print(porcentajes)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Los porcentajes nos indican que el 40% de los pacientes son solteros, el
+35% son casados, el 15% son divorciados y el 10% son viudos. Esto nos
+permite entender la proporción de cada categoría respecto al total de
+pacientes.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## 2.4 Frecuencias acumuladas
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Las frecuencias acumuladas pueden ser de las frecuencias absolutas, de las frecuencias relativas o de los porcentajes y corresponde a la suma de las frecuencias hasta una categoría específica. Estas frecuencias nos permiten observar cómo se acumulan las observaciones a medida que avanzamos por las categorías.
+
+::: {style="margin-top: 1cm;"}
+:::
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 4
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Calcule las frecuencias absolutas acumuladas del estado civil de los pacientes. Para ello, use la función `cumsum()` para calcular la suma acumulada de las frecuencias absolutas.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r fa4, exercise = TRUE}
+# Primero, cree un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# Luego, construya una tabla de frecuencias absolutas
+frec_absolutas <- table(estado_civil)
+
+# Calcule las frecuencias acumuladas absolutas
+frec_acumuladas_absolutas <- cumsum(frec_absolutas)
+
+# Imprima las frecuencias acumuladas absolutas
+print(frec_acumuladas_absolutas)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## Interpretación de las frecuencias absolutas acumuladas
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r fa4b, echo=FALSE}
+# Primero, cree un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", 
+                  "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# Luego, construya una tabla de frecuencias absolutas
+frec_absolutas <- table(estado_civil)
+
+# Calcule las frecuencias acumuladas absolutas
+frec_acumuladas_absolutas <- cumsum(frec_absolutas)
+
+# Imprima las frecuencias acumuladas absolutas
+print(frec_acumuladas_absolutas)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Podemos observar que la frecuencia absoluta acumulada de "Soltero" es 8, lo que significa que hay 8 pacientes solteros hasta esa categoría. La frecuencia acumulada hasta "Casado" es 15, lo que indica que hay 15 pacientes solteros o casados hasta esa categoría.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+En el caso de las frecuencias relativas acumuladas , estas nos indican la proporción acumulada de cada categoría respecto al total de observaciones.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## `r fa("lightbulb", fill = "orange")` Ejemplo 5
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Calcule las frecuencias relativas acumuladas del estado civil de los pacientes. Para ello, use la función `cumsum()` sobre las frecuencias relativas.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r fa5, exercise = TRUE}
+
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# tomamos el vector de frecuencias relativas del ejemplo anterior
+frec_relativas <- prop.table(table(estado_civil))
+
+# Calcule las frecuencias acumuladas relativas
+frec_rel_acum <- cumsum(frec_relativas)
+
+# Imprima las frecuencias acumuladas relativas
+print(frec_rel_acum)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## Interpretación de las frecuencias relativas acumuladas
+
+
+```{r fa5b, echo = FALSE}
+
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# tomamos el vector de frecuencias relativas del ejemplo anterior
+frec_relativas <- prop.table(table(estado_civil))
+
+# Calcule las frecuencias acumuladas relativas
+frec_rel_acum <- cumsum(frec_relativas)
+
+# Imprima las frecuencias acumuladas relativas
+print(frec_rel_acum)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Las frecuencias relativas acumuladas  nos indican que el 40% de los pacientes son solteros, el 75% son solteros o casados, y el 85% son solteros, casados o divorciados. Esto nos permite entender cómo se distribuyen las categorías a medida que avanzamos por ellas.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Nota: Este tipo de frecuencias es especialmente útil con variables ordinales, donde el orden de las categorías es importante, como en escalas de satisfacción o niveles educativos.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## `r fa("pencil-alt", fill = "green")` Ejercicio 2
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Tomemos como ejemplo el nivel educativo de 20 estudiantes:
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Vamos a considerar 3 categorias en este orden: Primaria, Secundaria, Universitaria:
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+["Primaria", "Secundaria", "Secundaria", "Universitaria", "Primaria", "Universitaria", "Secundaria", "Primaria", "Universitaria", "Secundaria", "Universitaria", "Primaria", "Secundaria", "Universitaria", "Primaria", "Secundaria", "Universitaria", "Primaria", "Secundaria", "Secundaria"]{style="color:orange; font-weight:bold;"}
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+
+
+Calcule las frecuencias absolutas, relativas, porcentajes y acumulados del nivel educativo de los estudiantes. Utilice las funciones `table()`,
+`prop.table()` y `cumsum()`.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r fa6, exercise = TRUE}
+
+# Primero, cree un vector con los datos del nivel educativo
+
+
+# Luego, calcule las frecuencias absolutas
+
+
+# Imprima las frecuencias absolutas
+
+
+# Calcule las frecuencias relativas
+
+
+# Imprima las frecuencias relativas
+
+
+# Calcule las frecuencias relativas
+
+
+# Imprima las frecuencias relativas
+
+
+# Calcule las frecuencias absolutas acumuladas 
+
+
+# Imprima las frecuencias absolutas acumuladas 
+
+
+# Calcule las frecuencias relativas acumuladas 
+
+
+# Imprima las frecuencias relativas acumuladas 
+
+
+# Calcule los porcentajes acumulados 
+
+
+# Imprima los porcentajes acumulados 
+
+```
+
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r fa6-solution}
+
+# Primero, cree un vector con los datos del nivel educativo
+nivel_educativo <- c("Primaria", "Secundaria", "Secundaria", "Universitaria", "Primaria", "Universitaria", 
+                     "Secundaria", "Primaria", "Universitaria", "Secundaria", "Universitaria", 
+                     "Primaria", "Secundaria", "Universitaria", "Primaria", "Secundaria", 
+                     "Universitaria", "Primaria", "Secundaria", "Secundaria")
+
+# Luego, calcule las frecuencias absolutas
+frec_absolutas <- table(nivel_educativo)
+
+# Imprima las frecuencias absolutas
+print(frec_absolutas)
+
+# Calcule las frecuencias relativas
+frec_relativas <- prop.table(frec_absolutas)
+
+# Imprima las frecuencias relativas
+print(frec_relativas)
+
+# Calcule las frecuencias acumuladas absolutas
+frec_acumuladas_absolutas <- cumsum(frec_absolutas)
+
+# Imprima las frecuencias acumuladas absolutas
+print(frec_acumuladas_absolutas)
+
+# Calcule las frecuencias acumuladas relativas
+frec_acumuladas_relativas <- cumsum(frec_relativas)
+
+# Imprima las frecuencias acumuladas relativas
+print(frec_acumuladas_relativas)
+
+```
+
+
+::: {style="margin-top: 1cm;"}
+:::
+
+#### `r fa("comments", fill = "#2c5697", height="1em", width="1em")` Según los resultados obtenidos responda:
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r question-frec3, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(learnr)
+library(dplyr)
+
+question(
+  "El nivel educativo menos frecuente fue:",
+    answer("Primaria", correct = TRUE),
+    answer("Secundaria"),
+    answer("Universitaria"),
+  allow_retry = TRUE
+)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r question-frec4, echo=FALSE, warning=FALSE, message=FALSE}
+question(
+  "El nivel educativo más frecuente fue:",
+    answer("Primaria"),
+    answer("Secundaria", correct = TRUE),
+    answer("Universitaria"),
+  allow_retry = TRUE
+)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r question-frec5, echo=FALSE, warning=FALSE, message=FALSE}
+question(
+  "La proporcion de personas con nivel educativo máximo de secundaria fue:",
+    answer("0.30"),
+    answer("0.35"), 
+    answer("0.65",correct = TRUE),
+  allow_retry = TRUE
+)
+```
+
+
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## 2.5 Tablas de asociación
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Las tablas de asociación son una herramienta útil para explorar la
+relación entre dos variables cualitativas. Estas tablas nos permiten
+observar cómo se distribuyen las categorías de una variable en función
+de las categorías de otra variable.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 6
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Calcule una tabla de asociación entre el estado civil y el género de los
+pacientes. Para ello, use la función `table()` para crear una tabla de
+contingencia.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r association_table_ex1, exercise = TRUE}
+# Primero, cree un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", 
+                   "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", 
+                   "Divorciado", "Soltero", "Casado")
+
+# Luego, cree un vector con los datos del género
+genero <- c("Masc", "Fem", "Masc", "Masc", "Fem", "Masc", "Fem", "Masc", "Fem", 
+            "Masc", "Fem", "Masc", "Fem", "Masc", "Fem", "Masc", "Fem", 
+            "Masc", "Fem", "Masc")
+
+# Calcule la tabla de asociación
+
+tabla_asociacion <- table(estado_civil, genero)
+
+# Imprima la tabla de asociación
+print(tabla_asociacion)
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## Interpretación de la tabla de asociación
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r association_table_ex1b, echo=FALSE}
+# Primero, cree un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", 
+                  "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", 
+                  "Divorciado", "Soltero", "Casado")
+
+# Luego, cree un vector con los datos del género
+genero <- c("Masc", "Fem", "Masc", "Masc", "Fem", "Masc", "Fem", "Masc", "Fem", 
+            "Masc", "Fem", "Masc", "Fem", "Masc", "Fem", "Masc", "Fem", 
+            "Masc", "Fem", "Masc")
+
+# Calcule la tabla de asociación
+tabla_asociacion <- table(estado_civil, genero)
+
+# Imprima la tabla de asociación
+print(tabla_asociacion)
+
+# Crear la tabla de asociación
+tabla_asociacion <- table(estado_civil, genero)
+
+# Localizar posiciones con la frecuencia máxima
+pos_max <- which(tabla_asociacion == max(tabla_asociacion), arr.ind = TRUE)
+
+# Crear una descripción de cada combinación
+categorias_max <- apply(pos_max, 1, function(i) {
+  paste(rownames(tabla_asociacion)[i[1]], "y", colnames(tabla_asociacion)[i[2]])
+})
+
+
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+La tabla de asociación nos permite observar cómo se distribuyen los
+pacientes según su estado civil y género.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+La frecuencia más alta es de `r max(tabla_asociacion)` pacientes,
+correspondiente a la(s) combinación(es):
+`r paste(categorias_max, collapse = ", ")`.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Esto sugiere que estas combinaciones son las más comunes en la muestra.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## 2.6 Moda
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+En el caso de variables cualitativas, la moda es la categoría que
+aparece con mayor frecuencia en el conjunto de datos.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Retomando el problema de diagnóstico de hospitalización de los 25
+pacientes, revisado en los ejercicios anteriores:
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 7
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Calcule la moda de los diagnósticos de hospitalización. Para ello, use
+la función `table()` de R para contar las frecuencias de cada valor y
+luego identifique la categoría con la mayor frecuencia.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r mode_ex1, exercise = TRUE}
+diag <- c("Neumonía", "Gripe", "Apendicitis", "Neumonía", "Gripe", "Gastroenteritis", "Neumonía", "Gripe", "Neumonía", 
+                  "Apendicitis", "Gripe", "Neumonía", "Gastroenteritis", "Gripe", "Neumonía", "Neumonía", "Gripe", "Apendicitis", 
+                  "Neumonía", "Gripe")
+
+# Luego, calcule las frecuencias absolutas
+frec_absolutas <- table(diag)
+
+# Imprima la tabla de frecuencias absolutas
+print(frec_absolutas)
+
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## Interpretación moda
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r mode_ex1b, echo=FALSE}
+diag <- c("Neumonía", "Gripe", "Apendicitis", "Neumonía", "Gripe", "Gastroenteritis", "Neumonía", "Gripe", "Neumonía", 
+                  "Apendicitis", "Gripe", "Neumonía", "Gastroenteritis", "Gripe", "Neumonía", "Neumonía", "Gripe", "Apendicitis", 
+                  "Neumonía", "Gripe")
+frec_absolutas <- table(diag)
+frec_absolutas
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+La categoría más habitual entre los pacientes es
+`r names(which.max(table(diag)))`, ya que aparece `r max(table(diag))`
+veces, más que cualquier otra categoría. Esto representa la moda de
+nuestro conjunto de datos.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## 3. Graficas de variables cualitativas
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Las gráficas son una herramienta poderosa para visualizar la
+distribución de variables cualitativas. En R, existen varias funciones
+para crear gráficos que representan las frecuencias absolutas, relativas
+y acumuladas de las categorías.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## 3.1 Gráficos de Barras Simples y Agrupados
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Los gráficos de barras son una representación visual de las frecuencias
+absolutas o relativas de las categorías de una variable cualitativa.
+Cada barra representa una categoría, y la altura de la barra es
+proporcional a la frecuencia de esa categoría.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+### 3.1.1 Gráficos de Barras Simples
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Los gráficos de barras simples son ideales para mostrar la frecuencia de
+cada categoría de una variable cualitativa. Cada barra representa una
+categoría, y su altura es proporcional a la frecuencia absoluta o
+relativa de esa categoría.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 8
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Creemos un gráfico de barras para el estado civil de los pacientes.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r barplot_ex1, exercise = TRUE, fig.height = 5, fig.width = 7}
+
+# Primero, crea un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# Crea una tabla de frecuencias para los datos
+frecuencias_ec <- table(estado_civil)
+
+# Genera el gráfico de barras
+barplot(frecuencias_ec,
+        main = "Distribución del Estado Civil de los Pacientes", # Título del gráfico
+        xlab = "Estado Civil", # Etiqueta del eje X
+        ylab = "Frecuencia Absoluta", # Etiqueta del eje Y
+        col = "skyblue", # Color de las barras
+        cex.names = 0.8,   # Tamaño de las etiquetas del eje X
+        cex.axis = 0.8,    # Tamaño de los valores del eje
+        cex.lab = 0.8,     # Tamaño de las etiquetas de los ejes
+        cex.main = 0.9) 
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## Interpretación del Gráfico de Barras
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r barplot_ex1b, fig.height = 5, fig.width = 6, echo=FALSE}
+
+# Primero, crea un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# Crea una tabla de frecuencias para los datos
+frecuencias_ec <- table(estado_civil)
+
+# Genera el gráfico de barras
+barplot(frecuencias_ec,
+        main = "Distribución del Estado Civil de los Pacientes", # Título del gráfico
+        xlab = "Estado Civil", # Etiqueta del eje X
+        ylab = "Frecuencia Absoluta", # Etiqueta del eje Y
+        col = "skyblue", # Color de las barras
+         cex.names = 0.8,   # Tamaño de las etiquetas del eje X
+        cex.axis = 0.8,    # Tamaño de los valores del eje
+        cex.lab = 0.8,     # Tamaño de las etiquetas de los ejes
+        cex.main = 0.9) 
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+El gráfico de barras nos permite ver rápidamente que la categoría
+"Soltero" es la más frecuente, seguida de "Casado", "Divorciado" y
+"Viudo". La altura de cada barra es directamente proporcional al número
+de pacientes en cada categoría.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+### 3.1.2 Gráficos de Barras Agrupados
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Los gráficos de barras agrupados son útiles cuando se desea comparar la
+frecuencia de varias categorías dentro de diferentes grupos. Cada grupo
+tiene sus propias barras, lo que permite una comparación visual clara
+entre las categorías.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 9
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Creemos un gráfico de barras agrupadas para comparar el estado civil de
+los pacientes en dos grupos diferentes: hombres y mujeres.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r barplot_grouped_ex1, exercise = TRUE, out.width="90%"}
+# Primero, crea un vector con los datos del estado civil y el género
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+genero <- c("Masc","Fem","Masc","Masc","Fem","Masc","Fem","Masc","Fem","Masc","Fem","Masc","Fem","Masc","Fem","Masc","Fem","Masc","Fem","Masc")
+
+# Crea una tabla de frecuencias para los datos
+frecuencias_ec <- table(estado_civil,genero)
+
+barplot(frecuencias_ec,
+        main = "Distribución del estado civil de los pacientes según el género",
+        xlab = "Estado Civil",
+        ylab = "Frecuencia Absoluta",
+        col = c("blue","skyblue", "lightpink","red"),  # un color por género
+        beside = TRUE,
+        legend.text = rownames(frecuencias_ec),  # Géneros
+        args.legend = list(x = "topright", bty = "n", inset = c(-0.05, 0.5), cex=0.8),
+        names.arg = colnames(frecuencias_ec),  # Estados civiles
+        cex.names = 0.8,   # Tamaño de las etiquetas del eje X
+        cex.axis = 0.8,    # Tamaño de los valores del eje
+        cex.lab = 0.8,     # Tamaño de las etiquetas de los ejes
+        cex.main = 0.8) 
+
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## Interpretación del Gráfico de Barras Agrupadas
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r barplot_grouped_ex1b,  out.width="90%", echo=FALSE}
+# Primero, crea un vector con los datos del estado civil y el género
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+genero <- c("Masc","Fem","Masc","Masc","Fem","Masc","Fem","Masc","Fem","Masc","Fem","Masc","Fem","Masc","Fem","Masc","Fem","Masc","Fem","Masc")
+
+# Crea una tabla de frecuencias para los datos
+frecuencias_ec <- table(estado_civil,genero)
+
+barplot(frecuencias_ec,
+        main = "Distribución del estado civil de los pacientes según el género",
+        xlab = "Estado Civil",
+        ylab = "Frecuencia Absoluta",
+        col = c("blue","skyblue", "lightpink","red"),  # un color por género
+        beside = TRUE,
+        legend.text = rownames(frecuencias_ec),  # Géneros
+        args.legend = list(x = "topright", bty = "n", inset = c(-0.05, -0.15), cex=0.8),
+        names.arg = colnames(frecuencias_ec),  # Estados civiles
+        cex.names = 0.8,   # Tamaño de las etiquetas del eje X
+        cex.axis = 0.8,    # Tamaño de los valores del eje
+        cex.lab = 0.8,     # Tamaño de las etiquetas de los ejes
+        cex.main = 0.8) 
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+El gráfico de barras agrupadas nos permite comparar la distribución del
+estado civil entre hombres y mujeres. Podemos observar que la mayoría de
+los pacientes son solteros, tanto hombres como mujeres, seguido de los
+casados.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## 3.2 Gráficos de Sectores (Pasteles)
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Los gráficos de sectores, también conocidos como gráficos de pastel, son
+una representación visual de las proporciones de las categorías de una
+variable cualitativa. Cada sector del pastel representa una categoría, y
+su tamaño es proporcional a la frecuencia absoluta o relativa de esa
+categoría.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 10
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Creemos un gráfico de sectores para el estado civil de los pacientes.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r pie_chart_ex1, exercise = TRUE, fig.height = 5, fig.width = 5}
+# Primero, crea un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# Calcular frecuencias absolutas
+frecuencias_ec <- table(estado_civil)
+
+# Calcular porcentajes
+porcentajes <- round(prop.table(frecuencias_ec) * 100, 1)
+
+# Crear etiquetas con nombre y porcentaje
+etiquetas <- paste(names(frecuencias_ec), ": ", porcentajes, "%", sep = "")
+
+# Generar gráfico de sectores con etiquetas
+pie(frecuencias_ec,
+    labels = etiquetas,
+    main = "Distribución del Estado Civil de los Pacientes",
+    col = c("skyblue", "lightgreen", "lightcoral", "lightyellow"))
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## Interpretación del Gráfico de Sectores
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r pie_chart_ex1b, fig.height = 5, fig.width = 5, echo=FALSE}
+# Primero, crea un vector con los datos del estado civil
+estado_civil <- c("Soltero", "Casado", "Divorciado", "Soltero", "Casado", "Viudo", "Soltero", "Casado", "Soltero", "Divorciado", "Casado", "Soltero", "Viudo", "Casado", "Soltero", "Soltero", "Casado", "Divorciado", "Soltero", "Casado")
+
+# Calcular frecuencias absolutas
+frecuencias_ec <- table(estado_civil)
+
+# Calcular porcentajes
+porcentajes <- round(prop.table(frecuencias_ec) * 100, 1)
+
+# Crear etiquetas con nombre y porcentaje
+etiquetas <- paste(names(frecuencias_ec), ": ", porcentajes, "%", sep = "")
+
+# Generar gráfico de sectores con etiquetas
+pie(frecuencias_ec,
+    labels = etiquetas,
+    main = "Distribución del Estado Civil de los Pacientes",
+    col = c("skyblue", "lightgreen", "lightcoral", "lightyellow"))
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+El gráfico de sectores nos permite ver la proporción de cada categoría
+en relación al total. Podemos observar que la categoría "Soltero"
+representa una gran parte del total, mientras que "Viudo" es la menos
+frecuente. Los gráficos de sectores son útiles para visualizar
+proporciones, pero pueden ser menos efectivos que los gráficos de barras
+cuando hay muchas categorías o cuando las diferencias entre las
+frecuencias son pequeñas.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## `r fa("pencil-alt", fill = "green")` Ejercicio 3
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Se registraron los diagnósticos de hospitalización 🏥 25 pacientes:
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+["Neumonía", "Gripe", "Apendicitis", "Neumonía", "Gripe",
+"Gastroenteritis", "Neumonía", "Gripe", "Neumonía", "Apendicitis",
+"Gripe", "Neumonía", "Gastroenteritis", "Gripe", "Neumonía", "Neumonía",
+"Gripe", "Apendicitis", "Neumonía",
+"Gripe"]{style="color:orange; font-weight:bold;"}
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 3.2
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Cree un gráfico de barras y un gráfico de sectores para los diagnósticos
+de hospitalización.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+✍️ Es su turno! Emplee el siguiente chunk (bloque) para escribir el
+código de R. Tenga presente que tiene la opción de ver la solución
+(¡pero asegúrese de intentar resolverla manualmente primero!)
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r pie_bar_ex1, exercise = TRUE, fig.height = 5, fig.width = 5}
+# Primero, cree un vector con los datos de los diagnósticos de hospitalización
+
+# Luego, calcule las frecuencias absolutas
+
+# Imprima la tabla de frecuencias absolutas
+
+# Genera el gráfico de barras
+
+# Genera el gráfico de sectores
+
+```
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r pie_bar_ex1-solution, fig.height = 5, fig.width = 5}
+
+# Primero, cree un vector con los datos de los diagnósticos de hospitalización
+diag <- c("Neumonía", "Gripe", "Apendicitis", "Neumonía", "Gripe", "Gastroenteritis", 
+                  "Neumonía", "Gripe", "Neumonía", "Apendicitis", "Gripe", "Neumonía", 
+                  "Gastroenteritis", "Gripe", "Neumonía", "Neumonía", "Gripe", 
+                  "Apendicitis", "Neumonía", "Gripe")
+
+# Luego, calcule las frecuencias absolutas
+frec_absolutas <- table(diag)
+
+# Imprima la tabla de frecuencias absolutas
+print(frec_absolutas)
+
+# Calcular porcentajes
+porcentajes <- round(prop.table(frec_absolutas) * 100, 1)
+
+# Crear etiquetas con nombre y porcentaje
+etiquetas <- paste(names(frec_absolutas), ": ", porcentajes, "%", sep = "")
+
+# Genera el gráfico de barras
+barplot(frec_absolutas,
+        main = "Distribución de los Diagnóstico de Hospitalización", # Título del gráfico
+        xlab = "Diagnóstico", # Etiqueta del eje X
+        ylab = "Frecuencia Absoluta", # Etiqueta del eje Y
+        col = "skyblue") # Color de las barras
+
+pie(frec_absolutas,
+    labels = etiquetas,
+    main = "Distribución de los Diagnóstico de Hospitalización",
+    col = c("skyblue", "lightgreen", "lightcoral", "lightyellow"))
+```
+
+::: {style="margin-top: 1cm;"}
+:::
+
+#### `r fa("comments", fill = "#2c5697", height="1em", width="1em")` Según los resultados obtenidos responda:
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+```{r question-frec6, echo=FALSE, warning=FALSE, message=FALSE}
+
+library(learnr)
+library(dplyr)
+
+question(
+  "El diagnóstico de hospitalización más frecuente fue:",
+    answer("Gastroenteritis"),
+    answer("Apendicitis"),
+    answer("Neumonía", correct = TRUE),
+    answer("Gripe"),
+  allow_retry = TRUE
+)
+```
+
+## 4. Conclusiones
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+En este taller, hemos explorado las medidas de resumen y visualización
+gráfica para variables cualitativas utilizando R. Hemos aprendido a
+calcular frecuencias absolutas, relativas y acumuladas, así como a
+identificar la moda. Además, hemos creado gráficos de barras simples y
+agrupados, así como gráficos de sectores para representar visualmente la
+distribución de las categorías.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+Estas herramientas son fundamentales para el análisis descriptivo de
+datos cualitativos y nos permiten comprender mejor la información
+contenida en nuestros conjuntos de datos.
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+## 5. Recursos adicionales
+
+::: {style="margin-top: 0.5cm;"}
+:::
+
+-   [R for Data Science](https://r4ds.had.co.nz/) - Un libro gratuito
+    que cubre los conceptos básicos de R y el análisis de datos.
+-   [R Documentation](https://www.rdocumentation.org/) - Documentación
+    oficial de R para funciones y paquetes.
+-   [ggplot2 Documentation](https://ggplot2.tidyverse.org/) -
+    Documentación oficial de ggplot2, el paquete de R para crear
+    gráficos.
+
+::: {style="margin-top: 0.5cm;"}
+:::
