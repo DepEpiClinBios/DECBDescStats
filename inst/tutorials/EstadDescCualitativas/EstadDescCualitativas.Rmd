@@ -254,7 +254,7 @@ código necesario para resolver las preguntas o problemas planteados.
 :::
 
 ```{r, echo=FALSE, out.width="50%", fig.align = "center"}
-knitr::include_graphics("images/ejercicio2.png")  
+knitr::include_graphics("images/ejercicio.png")  
 ```
 
 ::: {style="margin-top: 0.5cm;"}

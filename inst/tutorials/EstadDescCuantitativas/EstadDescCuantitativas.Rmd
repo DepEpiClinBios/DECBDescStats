@@ -1,74 +1,1193 @@
 ---
 title: "Estadística descriptiva para variables cuantitativas"
-output: learnr::tutorial
+author: "Fabián Gil"
+date: "`r Sys.Date()`"
+output:
+  learnr::tutorial:
+    progressive: true
+    allow_skip: false
+    df_print: default
 runtime: shiny_prerendered
+description: >
+  Estadística descriptiva aplicada a variables cuantitativas. 
+  Gráficos estadísticos para variables cuantitativas.
+editor_options: 
+  markdown: 
+    wrap: 72
 ---
 
-```{r setup, include=FALSE}
-library(learnr)
-knitr::opts_chunk$set(echo = FALSE)
+```{r banner, echo=FALSE, results='asis'}
+htmltools::HTML("
+  <div style='
+    text-align: center;
+    margin-bottom: 20px;
+  '>
+    <img src='images/banner_central.png' style='
+      max-width: 100%;
+      height: auto;
+    '>
+  </div>
+")
 ```
-
-
-## Topic 1
-
-### Exercise 
-
-*Here's a simple exercise with an empty code chunk provided for entering the answer.*
-
-Write the R code required to add two plus two:
-
-```{r two-plus-two, exercise=TRUE}
-
-```
-
-### Exercise with Code
-
-*Here's an exercise with some prepopulated code as well as `exercise.lines = 5` to provide a bit more initial room to work.*
-
-Now write a function that adds any two numbers and then call it:
-
-```{r add-function, exercise=TRUE, exercise.lines = 5}
-add <- function() {
   
-}
+```{r, echo=FALSE, results='asis'}
+htmltools::tags$style(HTML("
+  h1 {
+    color: #1e90ff; /* Azul para títulos principales */
+  }
+
+  h2 {
+    color: #007bff; /* Azul brillante para subtítulos */
+  }
+
+  h3 {
+    color: #0056b3; /* Azul más oscuro para subtítulos más pequeños */
+  }
+"))
 ```
 
-## Topic 2
 
-### Exercise with Hint
+```{r setup, include=FALSE}
+# Attach packages:
 
-*Here's an exercise where the chunk is pre-evaluated via the `exercise.eval` option (so the user can see the default output we'd like them to customize). We also add a "hint" to the correct solution via the chunk immediate below labeled `print-limit-hint`.*
+library(learnr)
+library(fontawesome)
+library(ggplot2)
+#gradethis::gradethis_setup()
+#tutorial_options(exercise.timelimit = 60)
 
-Modify the following code to limit the number of rows printed to 5:
+# Global code chunk settings:
+knitr::opts_chunk$set(echo = FALSE)
 
-```{r print-limit, exercise=TRUE, exercise.eval=TRUE}
-mtcars
+# data
+
 ```
 
-```{r print-limit-hint}
-head(mtcars)
+## 1. Introducción
+
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("images/banner1a.png")  
 ```
 
-### Quiz
+<div class="alert alert-info" role="alert">
+Este tutorial interactivo le permitirá aplicar los conceptos fundamentales de la <strong> estadística descriptiva para variables cuantitativas </strong> mediante la ejecución de código en R. A través de ejemplos guiados y ejercicios prácticos, usted desarrollará habilidades para calcular e interpretar medidas de tendencia central, dispersión y forma, así como para visualizar datos numéricos de manera efectiva. Estas herramientas son esenciales para describir y comprender el comportamiento de variables cuantitativas en investigaciones clínicas y epidemiológicas.
+</div>
 
-*You can include any number of single or multiple choice questions as a quiz. Use the `question` function to define a question and the `quiz` function for grouping multiple questions together.*
 
-Some questions to verify that you understand the purposes of various base and recommended R packages:
+<h3>Créditos</h3>
 
-```{r quiz}
+<p><strong>Autor:</strong> Fabián Gil</p>
+<p><strong>Afiliación:</strong> Departamento de Epidemiología Clínica y Bioestadística, Facultad de Medicina. Pontificia Universidad Javeriana</p>
+<p><strong>Contacto:</strong> <a href="mailto:fgil@javeriana.edu.co">fgil@javeriana.edu.co</a></p>
+
+<p>Este tutorial ha sido desarrollado como parte del curso de <em>Introducción a la Bioestadística en la Maestría en Epidemiología Clínica</em>.</p>
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank"><img src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" alt="Licencia de Creative Commons" style="border-width:0"/></a><br />Esta
+obra está bajo una
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">licencia
+de Creative Commons Reconocimiento-NoComercial-CompartirIgual 4.0
+Internacional</a>.
+
+## 1.1 Descripción del taller
+
+En el análisis de datos, comprender cómo se distribuyen y varían los valores numéricos es fundamental para tomar decisiones informadas y sólidas. En este taller interactivo, exploraremos los conceptos básicos de la estadística descriptiva aplicados a variables cuantitativas, utilizando el entorno de programación **R**.
+
+Nos enfocaremos en dos grandes ejes del análisis descriptivo:
+
+- **Medidas numéricas**, que nos permiten sintetizar la información sobre el centro y la variabilidad de un conjunto de datos. Estas incluyen:
+  - Medidas de tendencia central, como la media, la mediana y la moda.
+  - Medidas de dispersión, tales como el rango, la desviación estándar, la varianza y el rango intercuartílico.
+
+- **Visualización gráfica** de variables cuantitativas, una herramienta poderosa para explorar patrones, identificar valores atípicos y entender la forma general de una distribución. Trabajaremos con:
+  - Histogramas.
+  - Diagramas de caja (boxplots).
+  - Interpretación visual de la simetría, la dispersión y la presencia de outliers.
+
+A lo largo del taller, usted podrá:
+
+- Calcular e interpretar estas medidas utilizando R.
+- Relacionar los valores numéricos con sus representaciones gráficas.
+- Aplicar los conceptos a conjuntos de datos reales mediante ejercicios interactivos.
+
+Este taller tiene como objetivo introducir el análisis de datos empleando el programa estadístico [R](https://cran.r-project.org/).
+
+## 1.2 Temas que abordaremos:
+
+1. Cálculo de estadísticas descriptivas: medidas de tendencia central y dispersión.  
+2. Cálculo de frecuencias absolutas y relativas, y construcción de tablas de frecuencia.  
+3. Construcción e interpretación de gráficos estadísticos.
+
+
+## 1.3 ¿Cómo desarrollar este tutorial?
+
+A lo largo del tutorial, encontrará ejemplos de código, ejercicios de
+programación y preguntas de análisis. Los ejemplos de código y los
+ejercicios pretenden introducir habilidades básicas de R. No es
+necesario tener conocimientos previos sobre R para el desarrollo de este
+tutorial.
+
+#### `r fa("lightbulb", fill = "orange",  height="2em", width="2em")` = Ejemplo de código
+
+Este ícono identifica ejemplos de código listos para usar. Es posible explorar, ejecutar y modificar este código para comprender el funcionamiento de cada función o comando. Para ejecutar el código, solo es necesario presionar el botón **Run code** en la esquina superior derecha.
+
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("images/ejemplo.png")  
+```
+
+> **No es necesario preocuparse por “dañar” el código:** si se realizan modificaciones que generan errores, el ejemplo original puede restaurarse en cualquier momento mediante el botón **Start Over** en la esquina superior izquierda.
+
+
+#### `r fa("pencil-alt", fill = "green", height="2em", width="2em")` = Ejercicio de código
+
+Los ejercicios están diseñados para aplicar lo aprendido, escribiendo el código necesario para resolver las preguntas o problemas planteados.
+
+> **Si siente que se ha quedado sin ideas o no sabe cómo continuar con el ejercicio:** puede consultar el botón **Solution** (solución) para recibir orientación sin perder la oportunidad de aprender activamente.
+
+```{r, echo=FALSE, out.width="100%", fig.align = "center"}
+knitr::include_graphics("images/ejercicio.png")  
+```
+
+#### `r fa("comments", fill = "#2c5697", height="2em", width="2em")` = Preguntas de análisis
+
+Estas preguntas invitan a reflexionar sobre los resultados y conceptos. Algunas no poseen una única respuesta correcta, sino que buscan fomentar el pensamiento crítico.
+
+Con frecuencia, estas preguntas están vinculadas con un ejemplo o ejercicio
+de código. En esos casos, asegúrese de ejecutar el código
+correspondiente para poder ver la salida necesaria que le ayudará a
+responder las preguntas.
+
+## 2. Medidas de tendencia central
+
+Las medidas de tendencia central son estadísticas que resumen un conjunto de datos al identificar el valor central o típico. Las más comunes son:
+- **Media**: el promedio aritmético de los valores.
+- **Mediana**: el valor que divide el conjunto de datos en dos mitades iguales.
+- **Moda**: el valor que aparece con mayor frecuencia en el conjunto de datos.
+
+
+## 2.1 Media aritmética
+
+Considere el siguiente conjunto de datos que representa los niveles de glucosa en sangre 🩸 (mg/dL) de 20 pacientes:
+
+<span style="color:blue; font-weight:bold;">85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 350, 88, 90, 85, 89, 87</span>
+
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 2.1
+
+Calcule el promedio arítmético de los niveles de glucosa en sangre de los pacientes. Para ello, utilice la función `mean()` de R. Presione "run code" para ver el resultado
+
+```{r mean_ex1, exercise = TRUE}
+# Primero, cree un vector con los datos de glucosa
+glucosa <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87)
+
+# Luego, calcule la media
+mean(glucosa)
+```
+
+## Interpretación media aritmética  
+
+```{r mean1b, echo=FALSE}
+glucosa1 <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87)
+mean(glucosa1)
+```
+
+La media aritmética nos indica que, en promedio, los pacientes tienen un nivel de glucosa de aproximadamente `r round(mean(glucosa1),1)` mg/dL. ⚠️ **Importante:** reportar las unidades de medida de la variable al presentar resultados estadísticos, ya que esto proporciona contexto y claridad a la información.
+
+Este valor representa un resumen central de los datos, pero es importante recordar que la media puede verse influenciada por valores extremos o atípicos. En este caso, los valores están bastante concentrados alrededor del valor promedio, lo que sugiere que la media es una buena medida para representar el nivel típico de glucosa en este grupo de pacientes.
+
+## Media aritmética y valores atípicos
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 2.2
+
+🔔 Ahora suponga que se agrega un paciente con un nivel de glucosa de 350 mg/dL al conjunto de datos. Este valor es significativamente más alto que los demás y podría considerarse un **outlier** (valor atípico).
+
+Calcule el promedio arítmético del nuevo conjunto de niveles de glucosa en sangre de los pacientes.
+
+```{r mean_ex2, exercise = TRUE}
+# Primero, cree un vector con los datos de glucosa
+glucosa <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87, 350)
+
+# Luego, calcule la media
+mean(glucosa)
+```
+
+## Interpretación media aritmética con valores atípicos
+
+```{r mean1c, echo=FALSE}
+glucosa2 <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87, 350)
+mean(glucosa2)
+```
+
+El nuevo valor promedio ahora es `r round(mean(glucosa2),1)` mg/dL. Cuando incluimos el valor extremo de 350 mg/dL, la media sube considerablemente, dando la impresión de que los niveles de glucosa en general son más altos de lo que realmente están para la mayoría de los pacientes.
+
+Esto ocurre porque la media toma en cuenta todos los valores y es sensible a números muy grandes o muy pequeños, que “halan” del promedio hacia ellos. ⚠️ **Importante:** Nunca interpretes un promedio sin antes conocer el contexto y la distribución completa de tus datos.
+
+## Ejercicio 2.1
+
+Se registraron los tiempos de hospitalización 🏥 (en días) tras una cirugía en 28 pacientes:
+
+<span style="color:orange; font-weight:bold;">3, 4, 5, 6, 4, 3, 5, 4, 5, 4, 3, 4, 5, 6, 4, 5, 3, 4, 5, 6, 4, 3, 5, 4, 3, 5, 4</span>
+                 
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 2.1
+
+Calcule la media de los tiempos de hospitalización. 
+
+✍️ Es su turno! Emplee el siguiente chunk (bloque) para escribir el código de R. Tenga presente que
+tiene la opción de ver la solución (¡pero asegúrese de intentar resolverla manualmente primero!)
+
+```{r mean_ej1, exercise = TRUE}
+# Primero, cree un vector con los datos de tiempos de hospitalización
+# Luego, calcule la media
+
+
+```
+
+```{r mean_ej1-solution}
+# Primero, cree un vector con los datos de tiempos de hospitalización
+hosp <- c(3, 4, 5, 6, 4, 3, 5, 4, 5, 4, 3, 4, 5, 6, 4, 5, 3, 4, 5, 6, 4, 3, 5, 4, 3, 5, 4)
+
+# Luego, calcule la media
+mean(hosp)
+```
+
+## Ejercicio 2.2
+
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 2.3
+
+Dos nuevos pacientes son sometidos a cirugía, uno de ellos permaneció 100 días hospitalizado y el otro 2 días hospitalizado. Calcule la media de los tiempos de hospitalización incluyendo estos nuevos datos
+
+```{r mean_ej2, exercise = TRUE}
+# Primero, agregue los nuevos tiempos de hospitalización al vector de datos
+# Luego, calcule la media
+
+hosp <- c(3, 4, 5, 6, 4, 3, 5, 4, 5, 4, 3, 4, 5, 6, 4, 5, 3, 4, 5, 6, 4, 3, 5, 4, 3, 5, 4)
+```
+
+```{r mean_ej2-solution}
+# Primero, agregue los nuevos tiempos de hospitalización al vector de datos
+hosp <- c(3, 4, 5, 6, 4, 3, 5, 4, 5, 4, 3, 4, 5, 6, 4, 5, 3, 4, 5, 6, 4, 3, 5, 4, 3, 5, 4, 100, 2)
+
+# Luego, calcule la media
+mean(hosp)
+```
+
+## 2.2 Mediana
+
+Recuerde los valores de glucosa en sangre 🩸 (mg/dL) de los 20 pacientes empleados anteriormente:
+
+<span style="color:blue; font-weight:bold;">85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 350, 88, 90, 85, 89, 87</span>
+
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 2.4
+
+Calcule la mediana de los niveles de glucosa en sangre de los pacientes. Para ello, utilice la función `median()` de R. 
+
+```{r median_ex1, exercise = TRUE}
+# Primero, cree un vector con los datos de glucosa
+glucosa <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87)
+
+# Luego, calcule la mediana
+median(glucosa)
+```
+
+## Interpretación mediana
+
+```{r median1b, echo=FALSE}
+glucosa1 <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87)
+median(glucosa1)
+```
+
+La mediana nos indica que la mitad de los pacientes tienen un nivel de glucosa **igual o inferior que  `r round(mean(glucosa1),1)` mg/dL**, y la otra mitad tienen un nivel de glucosa **igual o mayor que `r round(mean(glucosa1),1)` mg/dL.** 
+
+
+## Mediana y valores atípicos
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 2.2
+
+¿Qué sucede con el valor mediano si el paciente con un nivel de glucosa de 350 mg/dL se agrega al conjunto de datos? Recordemos que este valor es significativamente más alto que los demás y podría considerarse un valor atípico.
+
+Calcule la mediana del nuevo conjunto de niveles de glucosa en sangre de los pacientes.
+
+```{r median_ex2, exercise = TRUE}
+# Primero, agregue el nuevo valor de glucosa al vector de datos
+glucosa <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87, 350)
+
+# Luego, calcule la mediana
+median(glucosa)
+```
+
+## Interpretación mediana con valores atípicos
+
+```{r median1c, echo=FALSE}
+glucosa1 <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87)
+glucosa2 <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87, 350)
+median(glucosa2)
+```
+
+Aunque se añadió un **valor altísimo de glucosa (350)**, la mediana casi no cambió: pasó de **`r round(median(glucosa1),1)` a `r round(median(glucosa2),1)` mg/dL**. La mediana solo  le importa lo que pasa en el centro del grupo,la mediana **no se deja afectar por valores extremos**.
+
+⚠️ **Importante:** 
+
+* La **media aritmética es sensible a los valores extremos**, ya que toma en cuenta todos los datos por igual. En este caso, la inclusión de un único valor atípico (350) distorsiona la media, haciendo parecer que el grupo tiene un nivel general de glucosa más alto de lo que realmente es.
+
+* La **mediana**, en cambio, **es robusta frente a valores atípicos**, ya que solo depende del orden de los datos y no de su magnitud. Por eso, permanece estable incluso cuando se introducen valores extremos.
+
+
+## Ejercicio 2.3
+
+Recuerde los tiempos de hospitalización 🏥 (en días) tras una cirugía en 28 pacientes:
+
+<span style="color:orange; font-weight:bold;">3, 4, 5, 6, 4, 3, 5, 4, 5, 4, 3, 4, 5, 6, 4, 5, 3, 4, 5, 6, 4, 3, 5, 4, 3, 5, 4</span>
+                 
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 2.3
+
+Calcule la mediana de los tiempos de hospitalización. 
+
+
+```{r median_ej1, exercise = TRUE}
+# Primero, cree un vector con los datos de tiempos de hospitalización
+# Luego, calcule la mediana
+
+
+```
+
+```{r median_ej1-solution}
+# Primero, cree un vector con los datos de tiempos de hospitalización
+hosp <- c(3, 4, 5, 6, 4, 3, 5, 4, 5, 4, 3, 4, 5, 6, 4, 5, 3, 4, 5, 6, 4, 3, 5, 4, 3, 5, 4)
+
+# Luego, calcule la mediana
+median(hosp)
+```
+
+## Ejercicio 2.4
+
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 2.4
+
+Ahora, agregue las estancias de 2 y 100 día al conjunto de datos  y calcule la mediana de los tiempos de hospitalización
+
+```{r median_ej2, exercise = TRUE}
+# Primero, agregue los nuevos tiempos de hospitalización al vector de datos
+# Luego, calcule la mediana
+
+hosp <- c(3, 4, 5, 6, 4, 3, 5, 4, 5, 4, 3, 4, 5, 6, 4, 5, 3, 4, 5, 6, 4, 3, 5, 4, 3, 5, 4)
+```
+
+```{r median_ej2-solution}
+# Primero, agregue los nuevos tiempos de hospitalización al vector de datos
+hosp <- c(3, 4, 5, 6, 4, 3, 5, 4, 5, 4, 3, 4, 5, 6, 4, 5, 3, 4, 5, 6, 4, 3, 5, 4, 3, 5, 4, 100, 2)
+
+# Luego, calcule la media
+median(hosp)
+```
+
+## 2.3 Moda
+
+
+Retomando el problema de los valores de glucosa en sangre🩸 (mg/dL) de los 20 pacientes, revisado en los ejercicos anteriores:
+
+<span style="color:blue; font-weight:bold;">85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 350, 88, 90, 85, 89, 87</span>
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 2.5
+
+Calcule la moda de los niveles de glucosa en sangre de los pacientes. Para ello, utilice la función `table()` de R para contar las frecuencias de cada valor y luego identifique el valor con la mayor frecuencia.
+
+```{r mode_ex1, exercise = TRUE}
+# Primero, cree un vector con los datos de glucosa
+glucosa <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87)
+
+# Luego, construya una tabla de frecuencias e identifique el/los valores con mayor frecuencia
+table(glucosa)
+```
+## Interpretación moda
+
+```{r mode1b, echo=FALSE}
+glucosa1 <- c(85, 90, 88, 92, 89, 87, 91, 86, 93, 88, 90, 89, 87, 91, 88, 88, 90, 85, 89, 87)
+table(glucosa1)
+```
+
+El valor de glucosa más habitual entre los pacientes es `r names(which.max(table(glucosa1)))` mg/dL, representa el nivel de glucosa más común entre los pacientes observados.
+
+La **moda** es la medida de tendencia central que indica el valor que **más veces se repite** en un conjunto de datos.
+
+A diferencia de la media y la mediana, la moda no depende del orden ni de la magnitud de los datos, sino de la frecuencia. Es especialmente útil en variables **categóricas o discretas**, pero también puede aplicarse a datos numéricos.
+
+## Pregunta de análisis 2.1
+
+##### `r fa("comments", fill = "#2c5697")` Análisis 2.1
+
+Un grupo de pacientes fueron evaluados en una consulta médica para controlar su presión arterial sistólica, los valores de presión arterial sistólica (mmHg) y la edad (en años) son los siguientes:
+
+<span style="color:green">edades: 55, 68, 34, 43, 40, 56, 76, 36, 69, 80, 31, 52, 33, 45, 65, 73, 68, 70, 58, 79, 49, 56, 69, 73, 62, 37, 56, 38, 59, 48, 42, 75, 65, 55, 45, 65, 43, 32, 66, 49, 30, 61, 74, 59, 54, 65, 67, 63, 42, 54 </span>
+
+<span style="color:orange">presiones arteriales: 139, 135, 126, 240, 136, 175, 113, 117, 123, 300, 165, 220, 143, 140, 141, 171, 176, 126, 172, 157, 143, 120, 164, 130, 135, 250, 169, 119, 122, 153, 155, 151, 290, 150, 172, 290, 180, 136, 129, 133, 164, 150, 140, 270, 150, 165, 126, 128, 157 </span>
+
+
+Utilice el script proporcionado a continuación para describir las variables `edad` y `sistolica`. Calcule las diferentes medidas de tendencia central y responda a las preguntas que se encuentran al final.
+
+```{r data_quiz_2_1, message=FALSE, warning=FALSE, include=FALSE}
+edad <-c(55, 68, 34, 43, 40, 56, 76, 36, 69, 80, 31, 52, 33, 45, 65, 73, 68, 70, 58, 79, 49, 56, 69, 73, 62, 37, 56, 38, 59, 48, 42, 75, 65, 55, 45, 65, 43, 32, 66, 49, 30, 61, 74, 59, 54, 65, 67, 63, 42, 54)
+sistolica <- c(139, 135, 126, 240, 136, 175, 113, 117, 123, 300, 165, 220, 143, 140, 141, 171, 176, 126, 172, 157, 143, 120, 164, 130, 135, 250, 169, 119, 122, 153, 155, 151, 290, 150, 172, 290, 180, 136, 129, 133, 164, 150, 140, 270, 150, 165, 126, 128, 157)
+```
+
+Los datos ya se encuentran cargados en R, los nombres de las variables son: `edad` y `sistolica`
+```{r analysis_2_1,  exercise = TRUE, exercise.setup = "data_quiz_2_1"}
+ 
+```
+
+```{r quiz_2_1}
 quiz(
-  question("Which package contains functions for installing other R packages?",
-    answer("base"),
-    answer("tools"),
-    answer("utils", correct = TRUE),
-    answer("codetools")
+  question("¿Cuál es el promedio de las edades (en años) para este grupo de pacientes?",
+    answer("30.0"),
+    answer("80.0 libras"),
+    answer("55.7 libras", correct = TRUE),
+    answer("56.0 libras"),
+    answer("43.5 libras"),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
   ),
-  question("Which of the R packages listed below are used to create plots?",
-    answer("lattice", correct = TRUE),
-    answer("tools"),
-    answer("stats"),
-    answer("grid", correct = TRUE)
+  question("¿Por debajo de cuál edad (en años) se encuentra el 50% de los pacientes más josvenes?",
+    answer("70"),
+    answer("40"),
+    answer("30.0"),
+    answer("56.0", correct = TRUE),
+    answer("60.0"),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  question("¿Cuál es la moda de la variable edad (en años)?",
+    answer("69"),
+    answer("56"),
+    answer("54"),
+    answer("42"),
+    answer("65", correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+  question("¿Cuál es de las medidas de tendencia central sería más adecuada para describir la variable edad de este grupo de pacientes?",
+    answer("Moda"),
+    answer("Mediana"),
+    answer("Promedio"),
+    answer("La moda o el promedio"),
+    answer("El promedio o la mediana", correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
   )
 )
 ```
+
+
+## 3. Medidas de posición
+
+Las medidas de posición como los **quantiles** son estadísticas que dividen un conjunto de datos en partes iguales, permitiendo entender la distribución de los valores y su ubicación en relación al conjunto total de datos. Las más comunes son:
+
+- **Percentiles**: dividen los datos en cien partes iguales. El percentil 50 es la mediana, el percentil 25 es el primer cuartil (Q1) y el percentil 75 es el tercer cuartil (Q3).
+- **Cuartiles**: dividen los datos en cuatro partes iguales. El primer cuartil (Q1) es el valor que separa el 25% inferior de los datos, el segundo cuartil (Q2) es la mediana, y el tercer cuartil (Q3) separa el 75% inferior del 25% superior.
+- **Deciles**: dividen los datos en diez partes iguales.
+
+## 3.1 Percentiles
+
+Los valores de creatinina sérica (mg/dL) de 20 pacientes son los siguientes:
+
+<span style="color:gray; font-weight:bold;">0.78, 1.05, 0.92, 0.84, 1.20, 1.10, 0.95, 0.88, 1.35, 1.02, 0.80, 0.76, 1.28, 1.15, 0.98, 1.07, 1.12, 0.85, 1.25, 0.90</span>
+
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 3.1
+
+Calcule los percentiles 5, 15, 70 y 80 para los valores de creatinina sérica. Para ello, utilice la función `quantile()` de R. Presione "run code" para ver el resultado
+
+```{r perc_ex1, exercise = TRUE}
+# Primero, cree un vector con los datos de glucosa
+creatinina <- c(0.78, 1.05, 0.92, 0.84, 1.20, 1.10, 0.95, 0.88, 1.35, 1.02, 0.80, 0.76, 1.28, 1.15, 0.98, 1.07, 1.12, 0.85, 1.25, 0.90)
+
+# Luego, calcule el percentil 5
+quantile(creatinina, 0.05)
+
+# Calcule el percentil 15
+quantile(creatinina, 0.15)
+
+# Calcule los percentiles 70 y 80. LOs percentiles se pueden calcular en un solo comando pasando un vector de percentiles
+quantile(creatinina, c(0.70, 0.80))
+```
+
+## Interpretación percentiles  
+
+```{r perc1b, echo=FALSE}
+creatinina1 <- c(0.78, 1.05, 0.92, 0.84, 1.20, 1.10, 0.95, 0.88, 1.35, 1.02, 0.80, 0.76, 1.28, 1.15, 0.98, 1.07, 1.12, 0.85, 1.25, 0.90)
+quantile(creatinina1, c(0.05, 0.15, 0.70, 0.80))
+```
+
+De forma general los quintiles se interpretan con relación al porcentaje del total de datos que dejan por debajo o por encima de un valor determinado. 
+
+El **5% de los pacientes** tiene niveles de creatinina por **debajo de 0.78** 
+mg/dL. El **15% de los pacientes** tiene niveles de creatinina por **debajo de 0.83** mg/dL. El **70% de los pacientes** tiene niveles de creatinina por **debajo de 1.11** mg/dL, y el **80% de los pacientes** tiene niveles de creatinina por **debajo de 1.16** mg/dL.
+
+De forma equivalente, el **95% de los pacientes** tiene niveles de creatinina por **encima de 0.78** mg/dL, el **85% de los pacientes** tiene niveles de creatinina por **encima de 0.83** mg/dL, el **30% de los pacientes** tiene niveles de creatinina por **encima de 1.11** mg/dL, y el **20% de los pacientes** tiene niveles de creatinina por **encima de 1.16** mg/dL.
+
+## 3.2 Cuartiles
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 3.2
+
+Emplee los mismos datos de creatinina sérica (mg/dL) de 20 pacientes:
+
+<span style="color:gray; font-weight:bold;">0.78, 1.05, 0.92, 0.84, 1.20, 1.10, 0.95, 0.88, 1.35, 1.02, 0.80, 0.76, 1.28, 1.15, 0.98, 1.07, 1.12, 0.85, 1.25, 0.90</span>
+
+Calcule los cuartiles Q1, Q2 (mediana) y Q3 para los valores de creatinina sérica. Para ello, utilice la función `quantile()` 
+
+```{r cuart_ex1, exercise = TRUE}
+# Los datos de creatinina ya se encuentran en el vector `creatinina`
+creatinina <- c(0.78, 1.05, 0.92, 0.84, 1.20, 1.10, 0.95, 0.88, 1.35, 1.02, 0.80, 0.76, 1.28, 1.15, 0.98, 1.07, 1.12, 0.85, 1.25, 0.90)
+
+# Luego, calcule los cuartiles Q1, Q2 (mediana) y Q3
+quantile(creatinina, c(0.25, 0.50, 0.75))
+
+```
+
+## Interpretación cuartiles
+
+```{r cuart1b, echo=FALSE}
+creatinina1 <- c(0.78, 1.05, 0.92, 0.84, 1.20, 1.10, 0.95, 0.88, 1.35, 1.02, 0.80, 0.76, 1.28, 1.15, 0.98, 1.07, 1.12, 0.85, 1.25, 0.90)
+quantile(creatinina1, c(0.25, 0.50, 0.75))
+```
+**1er cuartil (Q1 = 0.88 mg/dL):** El 25% de los pacientes tiene un nivel de creatinina igual o menor a 0.88 mg/dL. Esto representa el grupo con niveles más bajos dentro de la muestra.
+
+**Mediana (Q2 = 1.00 mg/dL):** El 50% de los pacientes tiene niveles por debajo de 1.00 mg/dL, y el otro 50% por encima. 
+
+**3er cuartil (Q3 = 1.13 mg/dL):** El 75% de los pacientes tiene niveles menores o iguales a 1.13 mg/dL, y solo el 25% supera este valor.
+
+
+## Pregunta de análisis 3.1
+
+##### `r fa("comments", fill = "#2c5697")` Análisis 3.1
+
+Un grupo de pacientes fueron evaluados en una consulta médica para controlar su presión arterial sistólica, los valores de presión arterial sistólica (mmHg) y la edad (en años) son los siguientes:
+
+<span style="color:green">edades: 55, 68, 34, 43, 40, 56, 76, 36, 69, 80, 31, 52, 33, 45, 65, 73, 68, 70, 58, 79, 49, 56, 69, 73, 62, 37, 56, 38, 59, 48, 42, 75, 65, 55, 45, 65, 43, 32, 66, 49, 30, 61, 74, 59, 54, 65, 67, 63, 42, 54 </span>
+
+<span style="color:orange">presiones arteriales: 139, 135, 126, 240, 136, 175, 113, 117, 123, 300, 165, 220, 143, 140, 141, 171, 176, 126, 172, 157, 143, 120, 164, 130, 135, 250, 169, 119, 122, 153, 155, 151, 290, 150, 172, 290, 180, 136, 129, 133, 164, 150, 140, 270, 150, 165, 126, 128, 157 </span>
+
+
+Utilice el script proporcionado a continuación para describir las variables `edad` y `sistolica`. Calcule las diferentes medidas de tendencia central y responda a las preguntas que se encuentran al final.
+
+```{r data_quiz_3_1, message=FALSE, warning=FALSE, include=FALSE}
+edad <-c(55, 68, 34, 43, 40, 56, 76, 36, 69, 80, 31, 52, 33, 45, 65, 73, 68, 70, 58, 79, 49, 56, 69, 73, 62, 37, 56, 38, 59, 48, 42, 75, 65, 55, 45, 65, 43, 32, 66, 49, 30, 61, 74, 59, 54, 65, 67, 63, 42, 54)
+sistolica <- c(139, 135, 126, 240, 136, 175, 113, 117, 123, 300, 165, 220, 143, 140, 141, 171, 176, 126, 172, 157, 143, 120, 164, 130, 135, 250, 169, 119, 122, 153, 155, 151, 290, 150, 172, 290, 180, 136, 129, 133, 164, 150, 140, 270, 150, 165, 126, 128, 157)
+```
+
+Los datos ya se encuentran cargados en R, los nombres de las variables son: `edad` y `sistolica`
+```{r analysis_3_1,  exercise = TRUE, exercise.setup = "data_quiz_3_1"}
+ 
+```
+
+```{r quiz_3_1}
+quiz(
+  question("¿Qué representa el primer cuartil (Q1) de la edad?",
+  answer("El valor por debajo del cual está el 25% más joven del grupo.", correct = TRUE),
+  answer("El valor promedio de las edades."),
+  answer("El valor por encima del cual se encuentra el 25% más joven."),
+  answer("El valor por debajo del cual está el 75% más joven del grupo."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+),
+  question("¿Qué indica el percentil 90 de la presión arterial sistólica?",
+  answer("El 90% de los pacientes tiene una presión igual o menor a ese valor.", correct = TRUE),
+  answer("Solo el 10% tiene una presión igual o menor."),
+  answer("La media de la presión en pacientes hipertensos."),
+  answer("El valor más frecuente en la distribución."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+),
+  question("Si se definiera como hipertensos al 20% de los pacientes con niveles más altos de presión arterial sistólica (mmHg), ¿Por encima de qué valor (mmHG) se consideraría a un paciente hipertenso?",
+    answer("300"),
+    answer("122.8"),
+    answer("242.0"),
+    answer("128.6"),
+    answer("173.8", correct = TRUE),
+    allow_retry = TRUE,
+    random_answer_order = TRUE,
+  message = "Verifica usando: quantile(sistolica, 0.8)"
+  ),
+ question("¿Por debajo de cuál valor de edad  (en años) se encuentra el 90% de los pacientes más jóvenes de este grupo?",
+  answer("73.1", correct = TRUE),
+  answer("35.8"),
+  answer("56.0"),
+  answer("75.5"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE,
+  message = "Verifica usando: quantile(edad, 0.9)"
+)
+)
+```
+
+
+## 4. Medidas de dispersión
+
+Las medidas de dispersión cuantifican la variabilidad o extensión de los datos en torno a una medida de tendencia central. Las más comunes son:
+- **Rango**: la diferencia entre el valor máximo y el mínimo.
+- **Varianza**: la media de las diferencias al cuadrado respecto a la media.
+- **Desviación estándar**: la raíz cuadrada de la varianza, que proporciona una medida de dispersión en las mismas unidades que los datos originales.
+- **Rango intercuartílico (IQR)**: la diferencia entre el tercer cuartil (Q3) y el primer cuartil (Q1), que mide la dispersión de la mitad central de los datos.
+
+## 4.1 Rango
+
+Los siguientes datos representan el peso corporal (en kg) de 10 pacientes:
+
+<span style="color:lightblue">peso: 60, 72, 85, 90, 65, 78, 88, 92, 77, 80 </span>
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 4.1
+
+Calcule el rango para los pesos de estos pacientes. Para ello, utilice la función `range()` de R. Presione "run code" para ver el resultado
+
+```{r range_ex1, exercise = TRUE}
+# Primero, cree un vector con los datos de glucosa
+peso <- c(60, 72, 85, 90, 65, 78, 88, 92, 77, 80)
+
+# Luego, calcule el rango, obtenga el valor mínimo y el máximo
+range(peso)
+
+# También puede calcular la diferencia entre el valor máximo y el mínimo
+diff(range(peso))
+```
+
+## Interpretación del rango
+
+```{r range1b, echo=FALSE}
+peso1 <- c(60, 72, 85, 90, 65, 78, 88, 92, 77, 80)
+range(peso1)
+```
+El rango (diferencia entre el valor máximo y mínimo) de 32 kg indica que existe una diferencia de 32 kilogramos entre el paciente con el peso más bajo (60 kg) y el paciente con el peso más alto (92 kg).
+
+El rango nos da una idea rápida de cuán dispersos están los valores en el conjunto de datos.Sin embargo, el rango al tener solo en cuenta dos valores del conjunto de datos, puede verse afectado por valores extremos, lo que podría dar una falsa impresión de la dispersión de los datos si el rango es muy grande.
+
+## Ejercicio 4.1
+
+Se registró la frecuencias cardíaca en reposo (latidos por minuto) de 15 sujetos:
+
+<span style="color:orange; font-weight:bold;">62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61</span>
+                 
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 4.1
+
+Calcule el rango de las frecuencias cardíacas en reposo. 
+
+✍️ Es su turno! Emplee el siguiente chunk (bloque) para escribir el código de R. 
+
+```{r range_ej1, exercise = TRUE}
+# Primero, cree un vector con los valores (asigne el nombre `frec`)
+# Luego, calcule el rango
+
+
+```
+
+```{r range_ej1-solution}
+# Primero, cree un vector con los valores (asigne el nombre `frec`)
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61)
+
+# Luego, calcule la media
+range(frec)
+```
+
+## Ejercicio 4.2
+
+Un sujeto adicional fue incluido en el estudio, con una frecuencia cardíaca de **110 latidos por minuto**. 
+                 
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 4.2
+
+Calcule el rango de las frecuencias cardíacas en reposo incluyendo este nuevo dato.
+
+```{r range_ej2, exercise = TRUE}
+# Adicione el nuevo valor al vector de frecuencias cardíacas
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61)
+
+# Calcule de nuevo el rango y analice el resultado
+
+
+```
+
+```{r range_ej2-solution}
+# Adicione el nuevo valor al vector de frecuencias cardíacas
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61, 110)
+
+# Calcule de nuevo el rango y analice el resultado
+range(frec)
+```
+
+## 4.2 Varianza
+
+Recuerde los valores del peso corporal (en kg) de los 10 pacientes:
+
+<span style="color:lightblue">peso: 60, 72, 85, 90, 65, 78, 88, 92, 77, 80 </span>
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 4.2
+
+Calcule la varianza de los pesos de estos pacientes. Para ello, utilice la función `var()` de R.
+
+```{r variance_ex1, exercise = TRUE}
+# Los valores de peso se encuentran en el vector peso
+peso <- c(60, 72, 85, 90, 65, 78, 88, 92, 77, 80)
+
+# Calcule la varianza
+var(peso)
+
+```
+
+## Interpretación de la varianza
+
+```{r variance1b, echo=FALSE}
+peso1 <- c(60, 72, 85, 90, 65, 78, 88, 92, 77, 80)
+var(peso1)
+```
+La **varianza** de 113.1 nos da una medida de cuán dispersos están los datos respecto a la media, pero **la varianza está en kg²** (kilogramos al cuadrado). Sin embargo, debido a que la varianza está en unidades cuadradas, **no podemos interpretarla directamente** en términos de peso (kg). La varianza nos da una idea de la magnitud de la dispersión, pero el valor real de dispersión es más fácilmente comprendido con la desviación estándar, que es simplemente la raíz cuadrada de la varianza.
+
+Para tener una interpretación más fácil, es recomendable utilizar la **desviación estándar**, ya que proporciona una medida de dispersión en las mismas unidades que los datos originales.
+
+## Ejercicio 4.3
+
+Recuerde la frecuencia cardíaca en reposo (latidos por minuto) de los 15 sujetos
+
+<span style="color:orange; font-weight:bold;">62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61</span>
+                 
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 4.3
+
+Calcule la varianza de las frecuencias cardíacas en reposo. 
+
+```{r variance_ej1, exercise = TRUE}
+# Primero, cree un vector con los valores (asigne el nombre `frec`)
+# Luego, calcule la varianza
+
+
+```
+
+```{r variance_ej1-solution}
+# Primero, cree un vector con los valores (asigne el nombre `frec`)
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61)
+
+# Luego, calcule la varianza
+var(frec)
+```
+
+## Ejercicio 4.4
+
+Ahora, un sujeto adicional fue incluido en el estudio, con una frecuencia cardíaca de **67 latidos por minuto**, un valor casi igual al promedio de los valores previos. 
+                 
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 4.4
+
+Calcule el rango de las frecuencias cardíacas en reposo incluyendo este nuevo dato.
+
+```{r variance_ej2, exercise = TRUE}
+# Adicione el nuevo valor al vector de frecuencias cardíacas
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61)
+
+# Calcule de nuevo la varianza y analice el resultado. ¿Cambia la varianza al considerar este nuevo valor?
+
+
+```
+
+```{r variance_ej2-solution}
+# Adicione el nuevo valor al vector de frecuencias cardíacas
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61, 67)
+
+# Calcule de nuevo la varianza y analice el resultado. ¿Cambia la varianza al considerar este nuevo valor?
+
+var(frec)
+```
+
+
+## 4.3 Desviación estándar
+
+Recuerde los valores del peso corporal (en kg) de los 10 pacientes:
+
+<span style="color:lightblue">peso: 60, 72, 85, 90, 65, 78, 88, 92, 77, 80 </span>
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 4.3
+
+Calcule la desviación estándar de los pesos de estos pacientes. Para ello, utilice la función `sd()` de R.
+
+```{r desest_ex1, exercise = TRUE}
+# Los valores de peso se encuentran en el vector peso
+peso <- c(60, 72, 85, 90, 65, 78, 88, 92, 77, 80)
+
+# Calcule la varianza
+sd(peso)
+
+```
+
+## Interpretación de la varianza
+
+```{r desest1b, echo=FALSE}
+peso1 <- c(60, 72, 85, 90, 65, 78, 88, 92, 77, 80)
+sd(peso1)
+```
+En este grupo de 10 personas, los pesos varían en promedio alrededor de 10.64 kg respecto al promedio de 78.7 kg. La desviación estándar corresponde a la raíz cuadrada de la varianza, y está en las mismas unidades que los datos originales (kg).
+
+## Ejercicio 4.5
+
+Recuerde la frecuencia cardíaca en reposo (latidos por minuto) de los 15 sujetos
+
+<span style="color:orange; font-weight:bold;">62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61</span>
+                 
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 4.5
+
+Calcule la desviación estándar de las frecuencias cardíacas en reposo. 
+
+```{r desest_ej1, exercise = TRUE}
+# Los datos ya se encuentran en el vector
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61)
+
+# Calcule la desviación estándar
+
+
+# También puede calcular la raíz cuadra de la varianza para comparar los resultados. La función sqrt() calcula la raíz cuadrada de un número.
+
+
+```
+
+```{r desest_ej1-solution}
+# Los datos ya se encuentran en el vector
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61)
+
+# Calcule la desviación estándar
+sd(frec)
+
+# También puede calcular la raíz cuadra de la varianza para comparar los resultados. La función sqrt() calcula la raíz cuadrada de un número.
+sqrt(var(frec))
+```
+
+## Ejercicio 4.6
+
+Ahora, un sujeto adicional fue incluido en el estudio, con una frecuencia cardíaca de **110 latidos por minuto**, un valor alto que podría considerarse un valor atípico.
+                 
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 4.6
+
+Calcule la desviación estándar de las frecuencias cardíacas en reposo incluyendo este nuevo dato.
+
+```{r desest_ej2, exercise = TRUE}
+# Adicione el nuevo valor al vector de frecuencias cardíacas
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61)
+
+# Calcule de nuevo la desviación estándar y analice el resultado. ¿Cambia la desviación estándar al considerar este nuevo valor?
+
+
+```
+
+```{r desest_ej2-solution}
+# Adicione el nuevo valor al vector de frecuencias cardíacas
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61, 110)
+
+# Calcule de nuevo la desviación estándar y analice el resultado. ¿Cambia la desviación estándar al considerar este nuevo valor?
+sd(frec)
+
+```
+
+
+## 4.4 Rango intercuartílico
+
+Los siguientes datos corresponden al índice de masa corporal (imc) de 30 pacientes:
+
+<span style="color:lightblue">imc: 29.5, 23.6, 24.8, 33.4, 22.0, 22.0, 27.2, 30.3, 24.1, 27.1,
+         21.0, 26.3, 25.1, 20.9, 28.2, 25.7, 30.6, 23.4, 26.6, 31.5,
+         24.9, 29.0, 25.9, 22.8, 32.0, 21.5, 31.4, 30.6, 23.7, 32.80 </span>
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 4.3
+
+Calcule el rango intercuartílico del imc de los pacientes. Para ello, utilice la función `IQR()` de R.
+
+```{r ranint_ex1, exercise = TRUE}
+# Los valores se encuentran en el vector imc
+imc <- c(29.5, 23.6, 24.8, 33.4, 22.0, 22.0, 27.2, 30.3, 24.1, 27.1,
+         21.0, 26.3, 25.1, 20.9, 28.2, 25.7, 30.6, 23.4, 26.6, 31.5,
+         24.9, 29.0, 25.9, 22.8, 32.0, 21.5, 31.4, 30.6, 23.7, 32.80)
+
+# Calcule el rango intercuartílico
+IQR(imc)
+
+# También puede calcular el rango intercuartílico usando la función quantile()
+# quantile(imc, c(0.75, 0.25)) para obtener Q3 y Q1 respectivamente
+
+quantile(imc, c(0.75, 0.25))
+```
+
+## Interpretación del rango intercuartílico
+
+```{r ranint1b, echo=FALSE}
+imc1 <- c(29.5, 23.6, 24.8, 33.4, 22.0, 22.0, 27.2, 30.3, 24.1, 27.1,
+         21.0, 26.3, 25.1, 20.9, 28.2, 25.7, 30.6, 23.4, 26.6, 31.5,
+         24.9, 29.0, 25.9, 22.8, 32.0, 21.5, 31.4, 30.6, 23.7, 32.80)
+IQR(imc1)
+```
+En este grupo de 30 pacientes, el rango intercuartílico (IQR) de 6.6 kg/m² indica que el 50% central de los pacientes tiene un IMC entre 23.6 y 30.1 kg/m². Es decir, si pusiéramos a todos los pacientes en fila, desde el que tiene el menor IMC hasta el mayor, el 50% central del grupo estaría dentro de ese rango de IMC. 
+
+El IQR es útil para identificar la dispersión de los datos y es menos sensible a valores atípicos que el rango total.
+
+
+
+## Ejercicio 4.7
+
+Recuerde la frecuencia cardíaca en reposo (latidos por minuto) de los 15 sujetos
+
+<span style="color:orange; font-weight:bold;">62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61</span>
+                 
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 4.7
+
+Calcule el rango intercuartílico de las frecuencias cardíacas en reposo. 
+
+```{r ranint_ej1, exercise = TRUE}
+# Los datos ya se encuentran en el vector
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61)
+
+# Calcule el rango intercuartílico
+
+
+```
+
+```{r ranint_ej1-solution}
+# Los datos ya se encuentran en el vector
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61)
+
+# Calcule el rango intercuartílico
+IQR(freq)
+
+```
+
+## Ejercicio 4.8
+
+Ahora, un sujeto adicional fue incluido en el estudio, con una frecuencia cardíaca de **110 latidos por minuto**, un valor alto que podría considerarse un valor atípico.
+                 
+##### `r fa("pencil-alt", fill = "green")` Ejercicio 4.8
+
+Calcule de nuevo el rango intercuartílico de las frecuencias cardíacas en reposo incluyendo este nuevo dato.
+
+```{r ranint_ej2, exercise = TRUE}
+# Adicione el nuevo valor al vector de frecuencias cardíacas
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61)
+
+# Calcule de nuevo la desviación estándar y analice el resultado. ¿Cambia el rango intercuartílico al considerar este nuevo valor?
+
+
+```
+
+```{r ranint_ej2-solution}
+# Adicione el nuevo valor al vector de frecuencias cardíacas
+frec <- c(62, 65, 70, 68, 72, 60, 75, 66, 64, 69, 71, 67, 63, 74, 61, 110)
+
+# Calcule de nuevo la desviación estándar y analice el resultado. ¿Cambia el rango intercuartílico al considerar este nuevo valor?
+IQR(frec)
+
+```
+
+## Pregunta de análisis 4.1
+
+##### `r fa("comments", fill = "#2c5697")` Análisis 4.1
+
+Un grupo de pacientes fueron evaluados en una consulta médica para controlar su presión arterial sistólica, los valores de presión arterial sistólica (mmHg) y la edad (en años) son los siguientes:
+
+<span style="color:green">edades: 55, 68, 34, 43, 40, 56, 76, 36, 69, 80, 31, 52, 33, 45, 65, 73, 68, 70, 58, 79, 49, 56, 69, 73, 62, 37, 56, 38, 59, 48, 42, 75, 65, 55, 45, 65, 43, 32, 66, 49, 30, 61, 74, 59, 54, 65, 67, 63, 42, 54 </span>
+
+<span style="color:orange">presiones arteriales: 139, 135, 126, 240, 136, 175, 113, 117, 123, 300, 165, 220, 143, 140, 141, 171, 176, 126, 172, 157, 143, 120, 164, 130, 135, 250, 169, 119, 122, 153, 155, 151, 290, 150, 172, 290, 180, 136, 129, 133, 164, 150, 140, 270, 150, 165, 126, 128, 157 </span>
+
+
+Utilice el script proporcionado a continuación para describir las variables `edad` y `sistolica`. Calcule las diferentes medidas de tendencia central y responda a las preguntas que se encuentran al final.
+
+```{r data_quiz_4_1, message=FALSE, warning=FALSE, include=FALSE}
+edad <-c(55, 68, 34, 43, 40, 56, 76, 36, 69, 80, 31, 52, 33, 45, 65, 73, 68, 70, 58, 79, 49, 56, 69, 73, 62, 37, 56, 38, 59, 48, 42, 75, 65, 55, 45, 65, 43, 32, 66, 49, 30, 61, 74, 59, 54, 65, 67, 63, 42, 54)
+sistolica <- c(139, 135, 126, 240, 136, 175, 113, 117, 123, 300, 165, 220, 143, 140, 141, 171, 176, 126, 172, 157, 143, 120, 164, 130, 135, 250, 169, 119, 122, 153, 155, 151, 290, 150, 172, 290, 180, 136, 129, 133, 164, 150, 140, 270, 150, 165, 126, 128, 157)
+```
+
+Los datos ya se encuentran cargados en R, los nombres de las variables son: `edad` y `sistolica`
+```{r analysis_4_1,  exercise = TRUE, exercise.setup = "data_quiz_4_1"}
+ 
+```
+
+```{r quiz_4_1}
+quiz(
+  question("¿Cuál es la mejor descripción del rango de la edad?",
+  answer("La diferencia entre la myor y la menor edad es 50 años.", correct = TRUE),
+  answer("El valor promedio de las edades."),
+  answer("La distancia entre el cuartíl 3 y el cuartíl 1 es 50 años."),
+  answer("Señala que tan concentrados están los datos con respecto al promedio de las edades."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+),
+  question("¿Qué se puede afirmar sobre la desviación estándar de la  presión arterial sistólica?",
+  answer("Todos los pacientes tienen una presión arterial sistólica cercana a 47.2 mmHg."),
+  answer("La distancia entre la mayor y menor presión arterial sistólica es 47.2 mmHg."),
+  answer("Se observa una gran variabilidad en las presiones sistólicas del grupo.", correct = TRUE),
+  answer("El 95% de los valores de la presión sistólica del grupo se encuentran en la media y dos viaciones estándar."),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+),
+  question("Qué indica el rango intercuartílico de la edad?",
+    answer("Que el 50% central de los pacientes tiene entre 43 y 67 años", correct = TRUE),
+    answer("Que todos los pacientes tienen entre 43 y 67 años"),
+    answer("Que el valor máximo de edad es 23 años mayor que el mínimo"),
+    answer("El promedio de las edades es 23 años"),
+    allow_retry = TRUE,
+    random_answer_order = TRUE
+  ),
+ question("¿Cuál de las medidas de dispersión sería la mas adecuada para describir la presión sistólica?",
+  answer("El rango intercuartílico", correct = TRUE),
+  answer("La media"),
+  answer("La desviación estándar"),
+  answer("El rango"),
+  allow_retry = TRUE,
+  random_answer_order = TRUE
+)
+)
+```
+
+## 5. Gráficos para variables cuantitativas
+
+Los gráficos son herramientas visuales que nos permiten comprender mejor la distribución y las características de los datos. Para variables cuantitativas, los gráficos más comunes son:
+- **Histograma**: muestra la distribución de los datos dividiendo el rango en intervalos (bins) y contando cuántos valores caen en cada intervalo.
+- **Boxplot (diagrama de caja)**: muestra la mediana, los cuartiles y los valores atípicos de los datos. Es útil para identificar la dispersión y la simetría de los datos.
+
+
+## 5.1 Histograma
+
+Un histograma es un gráfico que muestra la distribución de una variable cuantitativa dividiendo el rango de valores en intervalos (bins) y contando cuántos valores caen en cada intervalo. Es útil para visualizar la forma de la distribución, identificar patrones y detectar valores atípicos.
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 5.1
+
+Para crear un histograma en R, se utiliza la función `hist()`. A continuación, se muestra un ejemplo utilizando los datos de glucosa en sangre de 100 pacientes:
+```{r histograma_ex1, exercise = TRUE}
+# Primero, serán simulados los datos de glucosa en sangre de 100 pacientes, se asume que la distribución de la glucosa en sangre es normal y se generan valores aleatorios en un rango típico de glucosa en sangre con una media de 95 mg/dL y una desviación estándar de 15 mg/dL.
+set.seed(123)
+glucosa <- round(rnorm(100, mean = 95, sd = 15), 1)
+glucosa
+
+# Luego, cree el histograma
+hist(glucosa, 
+     main = "Histograma de glucosa en sangre", 
+     xlab = "Glucosa (mg/dL)", 
+     ylab = "Frecuencia", 
+     col = "lightblue", 
+     border = "black")
+# También puede ajustar el número de intervalos (bins) si es necesario
+hist(glucosa, 
+     breaks = 10, # Ajuste el número de intervalos
+     main = "Histograma de glucosa en sangre", 
+     xlab = "Glucosa (mg/dL)", 
+     ylab = "Frecuencia", 
+     col = "lightblue", 
+     border = "black")
+```
+
+## Interpretación del histograma
+```{r histograma1b, echo=FALSE}
+set.seed(123)
+glucosa1 <- round(rnorm(100, mean = 95, sd = 15), 1)
+hist(glucosa1,
+     main = "Histograma de glucosa en sangre", 
+     xlab = "Glucosa (mg/dL)", 
+     ylab = "Frecuencia", 
+     col = "lightblue", 
+     border = "black")
+```
+
+El histograma muestra la distribución de los niveles de glucosa en sangre de 50 pacientes. La mayoría de los pacientes tienen niveles de glucosa entre 80 y 110 mg/dL, con una disminución gradual en la frecuencia a medida que los niveles aumentan o disminuyen.
+
+Los histogramas son útiles para identificar la forma de la distribución (simétrica, sesgada, bimodal, etc.), la presencia de valores atípicos y la concentración de los datos en diferentes rangos. En este caso, la distribución parece ser aproximadamente normal, con una ligera tendencia a la derecha.
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 5.2
+
+Ahora se simulará la estancia hospitalaría de 100 pacientes
+
+```{r histograma_ex2, exercise = TRUE}
+# Simular datos con distribución sesgada (positiva)
+set.seed(456)
+dias_hosp <- round(rexp(100, rate = 1/5))  # media ~5 días, distribución exponencial
+dias_hosp
+
+# Crear el histograma
+hist(dias_hosp,
+     main = "Histograma de días de hospitalización",
+     xlab = "Días",
+     ylab = "Frecuencia",
+     breaks = 10)
+
+```
+
+## Interpretación del histograma
+```{r histograma2b, echo=FALSE}
+set.seed(456)
+dias_hosp1 <- round(rexp(100, rate = 1/5))  # media ~5 días, distribución exponencial
+hist(dias_hosp1,
+     main = "Histograma de glucosa en sangre", 
+     xlab = "Glucosa (mg/dL)", 
+     ylab = "Frecuencia", 
+     col = "lightblue", 
+     border = "black")
+```
+
+El histograma muestra la distribución de los días de hospitalización de 100 pacientes. La mayoría de los pacientes tienen una estancia corta, con una concentración de datos en el rango de 1 a 10 días. A medida que aumenta el número de días, la frecuencia disminuye rápidamente, lo que indica que las estancias más largas son menos comunes. En este caso, se observa que la distribución es sesgada a la derecha, lo que significa que hay un número relativamente pequeño de pacientes con estancias muy largas en comparación con aquellos con estancias cortas.
+
+## 5.2 Boxplot
+
+Un boxplot (diagrama de caja) es un gráfico que muestra la mediana, los cuartiles y los valores atípicos de una variable cuantitativa. Es útil para identificar la dispersión de los datos, la simetría y la presencia de valores atípicos.
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 5.3
+
+Para crear un boxplot en R, se utiliza la función `boxplot()`. A continuación, se muestra un ejemplo utilizando los datos de glucosa en sangre de los 100 pacientes empleados anteriormente:
+
+```{r boxplot_ex1, exercise = TRUE}
+# Primero, serán simulados los datos de glucosa en sangre de 100 pacientes, la función `set.seed()` asegura que los resultados de la simulación sean reproducibles.
+
+set.seed(123)
+glucosa <- round(rnorm(100, mean = 95, sd = 15), 1)
+glucosa
+
+# Luego, cree el boxplot
+boxplot(glucosa, 
+        main = "Boxplot de glucosa en sangre", 
+        ylab = "Glucosa (mg/dL)", 
+        col = "lightblue", 
+        border = "black")
+```
+
+## Interpretación del boxplot
+```{r boxplot1b, echo=FALSE}
+set.seed(123)
+glucosa1 <- round(rnorm(100, mean = 95, sd = 15), 1)
+boxplot(glucosa1, 
+        main = "Boxplot de glucosa en sangre", 
+        ylab = "Glucosa (mg/dL)", 
+        col = "lightblue", 
+        border = "black")
+```
+
+El boxplot muestra la distribución de los niveles de glucosa en sangre de 100 pacientes. La línea horizontal dentro de la caja representa la mediana (valor central) de los datos, mientras que los bordes de la caja representan el primer cuartil (Q1) y el tercer cuartil (Q3). Los "bigotes" se extienden hasta el valor mínimo y máximo dentro de 1.5 veces el rango intercuartílico (IQR) desde Q1 y Q3, respectivamente. Los puntos fuera de este rango se consideran valores atípicos y se muestran como puntos individuales.
+
+Los boxplots son útiles para identificar la dispersión de los datos, la simetría y la presencia de valores atípicos. En este caso, la distribución parece ser simétrica, con una mediana alrededor de 95 mg/dL y un rango intercuartílico que indica que el 50% central de los pacientes tiene niveles de glucosa entre aproximadamente 85 y 105 mg/dL.
+
+##### `r fa("lightbulb", fill = "orange")` Ejemplo 5.4
+
+Ahora se simulará la estancia hospitalaría de 100 pacientes
+
+```{r boxplot_ex2, exercise = TRUE}
+# Simular datos con distribución sesgada (positiva)
+set.seed(456)
+dias_hosp <- round(rexp(100, rate = 1/5))  # media ~5 días, distribución exponencial
+dias_hosp
+
+# Crear el boxplot
+boxplot(dias_hosp, 
+        main = "Boxplot de días de hospitalización", 
+        ylab = "Días", 
+        col = "lightblue", 
+        border = "black")
+```
+
+## Interpretación del boxplot
+```{r boxplot2b, echo=FALSE}
+set.seed(456)
+dias_hosp1 <- round(rexp(100, rate = 1/5))  # media ~5 días, distribución exponencial
+boxplot(dias_hosp1, 
+        main = "Boxplot de días de hospitalización", 
+        ylab = "Días", 
+        col = "lightblue", 
+        border = "black")
+```
+
+El boxplot muestra la distribución de los días de hospitalización de 100 pacientes. La línea horizontal dentro de la caja representa la mediana (valor central) de los datos, mientras que los bordes de la caja representan el primer cuartil (Q1) y el tercer cuartil (Q3). Los "bigotes" se extienden hasta el valor mínimo y máximo dentro de 1.5 veces el rango intercuartílico (IQR) desde Q1 y Q3, respectivamente. Los puntos fuera de este rango se consideran valores atípicos y se muestran como puntos individuales.
+
+
