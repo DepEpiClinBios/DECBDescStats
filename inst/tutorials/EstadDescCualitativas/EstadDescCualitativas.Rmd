@@ -8,7 +8,7 @@ output:
     df_print: default
 runtime: shiny_prerendered
 description: >
-  Este modulo contiene los conceptos básico para estimar estadística descriptiva y gráficos estadísticos para variables cualitativas en R.
+  Este módulo contiene los conceptos básico para estadística descriptiva y gráficos estadísticos para variables cualitativas en R.
 editor_options: 
   markdown: 
     wrap: 72
