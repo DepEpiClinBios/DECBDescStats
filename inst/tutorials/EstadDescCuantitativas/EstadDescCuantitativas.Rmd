@@ -33,7 +33,7 @@ htmltools::HTML("
 ```{r, echo=FALSE, results='asis'}
 htmltools::tags$style(HTML("
   h1 {
-    color: #1e90ff; /* Azul para títulos principales */
+    color: #1e90ff; /* Azul para títulos principale */
   }
 
   h2 {
