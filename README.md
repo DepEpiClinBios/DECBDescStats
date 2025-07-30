@@ -43,8 +43,8 @@ Este paquete está licenciado bajo la Licencia Pública General de GNU v3.0. Con
 ## Contacto
 Para cualquier duda o sugerencia, por favor contacte a los autores del paquete:
 
--fgil@javeriana.edu.co
+- fgil@javeriana.edu.co
 
--mrondon@javeriana.edu.co
+- martin.rondon@javeriana.edu.co
 
 
